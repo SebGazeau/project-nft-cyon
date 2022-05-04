@@ -1,0 +1,11 @@
+# Dependency directory
+node_modules
+# truffle build directory
+build/
+# typechain
+types
+
+# buidler
+artifacts
+cache
+.env

@@ -1,0 +1,30 @@
+{
+  "name": "project-nft-cyon",
+  "version": "1.0.0",
+  "description": "NFT maketplace project",
+  "main": "./client/src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebGazeau/project-nft-cyon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SebGazeau/project-nft-cyon/issues"
+  },
+  "homepage": "https://github.com/SebGazeau/project-nft-cyon#readme",
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "dotenv": "^16.0.0",
+    "npm": "^8.8.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.6.0"
+  }
+}
