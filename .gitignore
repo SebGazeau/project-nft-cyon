@@ -9,3 +9,5 @@ types
 artifacts
 cache
 .env
+
+*.code-workspace
