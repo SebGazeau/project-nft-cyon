@@ -1,5 +1,5 @@
 const NFTs_Collections = artifacts.require("./contracts/NFTs_Collections.sol");
-const {BN, expectRevert, expectEvent} = require('../node_modules/@openzeppelin/test-helpers');
+const {BN, expectRevert, expectEvent} = require('@openzeppelin/test-helpers');
 const {expect} = require('chai');
 
 contract('NFTs_Collections', accounts => {
