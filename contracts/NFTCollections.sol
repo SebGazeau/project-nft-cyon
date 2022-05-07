@@ -6,6 +6,9 @@ import "../node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 
+/// @title NFTCollections contract
+/// @author Sebastien Gazeau, Sébastien Dupertuis et Alexis Mendoza
+/// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
