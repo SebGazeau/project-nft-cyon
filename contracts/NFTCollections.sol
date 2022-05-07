@@ -6,7 +6,7 @@ import "../node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 
-contract NFTs_Collections is Initializable, ERC721URIStorageUpgradeable {
+contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 

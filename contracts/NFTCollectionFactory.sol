@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
-import "./NFTs_Collections.sol";
+import "./NFTCollections.sol";
 
 contract NFTCollectionFactory {
     event NFTCollectionCreated(
@@ -14,7 +14,7 @@ contract NFTCollectionFactory {
         string memory _NFTSymbole
     ) external returns (address collectionAddress) {
         // Import the bytecode of the contract to deploy
-        bytes memory collectionBytecode = type(NFTs_Collections).creationCode;
+        bytes memory collectionBytecode = type(NFTCollections).creationCode;
         // Make a random salt based on the artist name
         bytes32 salt = keccak256(abi.encodePacked(_NFTName));
 
@@ -31,7 +31,7 @@ contract NFTCollectionFactory {
             }
         }
         // Initialize the collection contract with the artist settings
-        NFTs_Collections(collectionAddress).initialize(_NFTName, _NFTSymbole);
+        NFTCollections(collectionAddress).initialize(_NFTName, _NFTSymbole);
 
         emit NFTCollectionCreated(_NFTName, collectionAddress, block.timestamp);
     }
