@@ -2,10 +2,8 @@
 pragma solidity 0.8.13;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
-//import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "../node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-//import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 
 contract NFTs_Collections is Initializable, ERC721URIStorageUpgradeable {
