@@ -13,6 +13,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    // Structure of the NFT
     struct NFT {
         string name;
         string description;
@@ -23,6 +24,9 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     }
     NFT[] collection;
 
+    /// @notice initialization of the ERC271
+    /// @param _name name of the collection
+    /// @param _symbol symbol of the collection
     function initialize(string memory _name, string memory _symbol)
         public
         initializer
@@ -30,6 +34,16 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         __ERC721_init(_name, _symbol);
     }
 
+    /// @notice mint from the collection
+    /// @param _user NFT and collection user
+    /// @param _tokenURI Token
+    /// @param _name Description of the NFT
+    /// @param _description Description of the NFT
+    /// @param _tag Tag of the NFT
+    /// @param _price NFT price
+    /// @param _favorite NFT favorite
+    /// @param _isAuctionable NFT auctioned
+    /// @return newItemId New id of the item that has been minted
     function MintNFTCollection(
         address _user,
         string memory _tokenURI,

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
+
 import "./NFTCollections.sol";
 
 /// @title NFTCollectionFactory contract
@@ -17,9 +18,10 @@ contract NFTCollectionFactory {
         uint256 _timestamp
     );
 
-    /// @notice event for voter registration
+    /// @notice creation of a NFT Collection
     /// @param _NFTName NFT name
     /// @param _NFTSymbole Symbol of the NFT
+    /// @return collectionAddress Address of the collection
     function createNFTCollection(
         string memory _NFTName,
         string memory _NFTSymbole
