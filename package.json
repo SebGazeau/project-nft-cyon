@@ -22,8 +22,8 @@
   "homepage": "https://github.com/SebGazeau/project-nft-cyon#readme",
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.15",
-    "dotenv": "^16.0.0",
-    "npm": "^8.8.0"
+    "@openzeppelin/truffle-upgrades": "^1.15.0",
+    "dotenv": "^16.0.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
