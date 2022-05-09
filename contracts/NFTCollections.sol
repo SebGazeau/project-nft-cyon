@@ -21,6 +21,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         string name;
         string description;
         string tag;
+        address tokenAddress;
         uint256 price;
         bool favorite;
         bool isAuctionable;
@@ -43,6 +44,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     /// @param _name Description of the NFT
     /// @param _description Description of the NFT
     /// @param _tag Tag of the NFT
+    /// @param _tokenAddress address du token
     /// @param _price NFT price
     /// @param _favorite NFT favorite
     /// @param _isAuctionable NFT auctioned
@@ -53,13 +55,22 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         string memory _name,
         string memory _description,
         string memory _tag,
+        address _tokenAddress,
         uint256 _price,
         bool _favorite,
         bool _isAuctionable
     ) public returns (uint256) {
         _tokenIds.increment();
         collection.push(
-            NFT(_name, _description, _tag, _price, _favorite, _isAuctionable)
+            NFT(
+                _name,
+                _description,
+                _tag,
+                _tokenAddress,
+                _price,
+                _favorite,
+                _isAuctionable
+            )
         );
         uint256 newItemId = _tokenIds.current();
         _mint(_user, newItemId);
