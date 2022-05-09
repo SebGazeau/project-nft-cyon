@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
+/// @title A decentralized auction system
+/// @author Sebastien Gazeau, Sébastien Dupertuis et Alexis Mendoza
+/// @notice This smart contract can be used in any NFT project requiring a system of auction
 contract Auction {
     //------------------------------------------------------------------------------------
     // ----------------------------------Variables----------------------------------------
@@ -46,6 +49,8 @@ contract Auction {
         bidManager[_nftCollection][_nftTokenID].highestBidder = msg.sender;                         // The initial highest bidder is the message sender
         bidManager[_nftCollection][_nftTokenID].highestBid = msg.value;                        // Set the first selling price
         bidManager[_nftCollection][_nftTokenID].hasAuctionStarted = true;                           // Auction started
+        bidManager[_nftCollection][_nftTokenID].bidders.push(msg.sender);                       // Push the owner in the bidders list
+        bidManager[_nftCollection][_nftTokenID].totalBid[msg.sender] += msg.value;              // Initialize the total bid of the owner
 
         emit AuctionStarted(_nftCollection, _nftTokenID, msg.sender);       // Raise the event to log when an auction starts
     }
@@ -120,7 +125,7 @@ contract Auction {
     //------------------------------------------------------------------------------------
     // ------------------------------------Getters----------------------------------------
     //------------------------------------------------------------------------------------
-    /// @notice This function allows to initiate a new auction
+    /// @notice This function allows to check if the auction ended
     /// @dev Call this function to check if the time of the auction is over or not
     /// @param _nftCollection Collection name of the given NFT
     /// @param _nftTokenID Token ID of the given NFT
@@ -129,5 +134,27 @@ contract Auction {
         require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT  
 
         return (block.timestamp >= bidManager[_nftCollection][_nftTokenID].auctionEndTime);
+    }
+
+    /// @notice This function allows to check for the current highest bidder
+    /// @dev Call this function when you want to know the address of the highest bidder
+    /// @param _nftCollection Collection name of the given NFT
+    /// @param _nftTokenID Token ID of the given NFT
+    /// @return Returns the address of the current highest bidder
+    function getCurrentHighestBidder(string memory _nftCollection, uint _nftTokenID) external view returns (address) {
+        require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT  
+
+        return (bidManager[_nftCollection][_nftTokenID].highestBidder);
+    }
+
+    /// @notice This function allows to check for the current highest bid
+    /// @dev Call this function when you want to know the value of the highest bid
+    /// @param _nftCollection Collection name of the given NFT
+    /// @param _nftTokenID Token ID of the given NFT
+    /// @return Returns the value of the current highest bid
+    function getCurrentHighestBid(string memory _nftCollection, uint _nftTokenID) external view returns (uint) {
+        require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT  
+
+        return (bidManager[_nftCollection][_nftTokenID].highestBid);
     }
 }
