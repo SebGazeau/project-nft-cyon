@@ -15,7 +15,8 @@ contract NFTCollectionFactory {
     event NFTCollectionCreated(
         string _NFTName,
         address _collectionAddress,
-        uint256 _timestamp
+        uint256 _timestamp,
+        address _creator
     );
 
     /// @notice creation of a NFT Collection
@@ -47,6 +48,6 @@ contract NFTCollectionFactory {
         NFTCollections(collectionAddress).initialize(_NFTName, _NFTSymbole);
 
         // Event avec un timestamp
-        emit NFTCollectionCreated(_NFTName, collectionAddress, block.timestamp);
+        emit NFTCollectionCreated(_NFTName, collectionAddress, block.timestamp, msg.sender);
     }
 }
