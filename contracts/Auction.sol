@@ -43,7 +43,7 @@ contract Auction {
     /// @param _biddingTime Auction time in seconds
     function initializeAuction(string memory _nftCollection, uint _nftTokenID, uint _biddingTime) external payable {
         require(!bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "An auction has already started for this NFT.");    // Make sure an auction did not start yet
-        require(_biddingTime > 0, "Please define an auction higher tha zero.");                                                 // The auction time must be higher than zero
+        require(_biddingTime > 0, "Please define an auction higher than zero.");                                                 // The auction time must be higher than zero
 
         bidManager[_nftCollection][_nftTokenID].auctionEndTime = block.timestamp + _biddingTime;    // Define the time at which the auction will end up
         bidManager[_nftCollection][_nftTokenID].highestBidder = msg.sender;                         // The initial highest bidder is the message sender
@@ -60,8 +60,9 @@ contract Auction {
     /// @param _nftCollection Collection name of the given NFT
     /// @param _nftTokenID Token ID of the given NFT
     function bid(string memory _nftCollection, uint _nftTokenID) external payable {
-        require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT
-        require(block.timestamp < bidManager[_nftCollection][_nftTokenID].auctionEndTime, "The auction has already ended.");// Make sure the auction is not finished yet
+        require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");        // Make sure an auction is ongoing for this NFT
+        require(block.timestamp < bidManager[_nftCollection][_nftTokenID].auctionEndTime, "The auction has already ended.");    // Make sure the auction is not finished yet
+        require(bidManager[_nftCollection][_nftTokenID].bidders.length < 1000, "This auction achieved the maximum amount of bids.");    // Revert if we achieve the given limit of bids
         require((bidManager[_nftCollection][_nftTokenID].totalBid[msg.sender]+msg.value) > bidManager[_nftCollection][_nftTokenID].highestBid, "The bid is too low."); // Make sure the bid (including previous bids) is higher than the current highest bid
     
         // Check if there was already a bid
@@ -93,7 +94,7 @@ contract Auction {
         uint refund = bidManager[_nftCollection][_nftTokenID].pendingRefunds[msg.sender];   // Recover the funds to refund before erasing it
 
         bidManager[_nftCollection][_nftTokenID].pendingRefunds[msg.sender] = 0;             // Erase the refund counter
-        bidManager[_nftCollection][_nftTokenID].totalBid[msg.sender] = 0;
+        bidManager[_nftCollection][_nftTokenID].totalBid[msg.sender] = 0; 
         
         (bool success, ) = msg.sender.call{value:refund}("");
         require(success);
@@ -109,7 +110,7 @@ contract Auction {
 
         bidManager[_nftCollection][_nftTokenID].hasAuctionStarted = false; 
         
-        // Reset totalBid mapping
+        // Reset totalBid mapping. No risk of DoS gaz limit since the amount of bidder is limited to 1000.
         uint listSize = bidManager[_nftCollection][_nftTokenID].bidders.length;
         address tempAddress;
         for (uint i=listSize; i>0; i--){
@@ -156,5 +157,16 @@ contract Auction {
         require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT  
 
         return (bidManager[_nftCollection][_nftTokenID].highestBid);
+    }
+
+    /// @notice This function allows to check for the amount of bidders
+    /// @dev Call this function from the front to display the amount of bidders over the given limit (here 1000)
+    /// @param _nftCollection Collection name of the given NFT
+    /// @param _nftTokenID Token ID of the given NFT
+    /// @return Returns the amount of bidders (how many addresses)
+    function getBiddersAmount(string memory _nftCollection, uint _nftTokenID) external view returns (uint) {
+        require(bidManager[_nftCollection][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");    // Make sure an auction is ongoing for this NFT  
+
+        return (bidManager[_nftCollection][_nftTokenID].bidders.length);
     }
 }
