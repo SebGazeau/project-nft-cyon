@@ -52,6 +52,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
 
     /// @notice Mint a NFT in the collection
     /// @param _firstOwner The address to mint the NFT to
+    /// @param _creator The creator of the new NFT
     /// @param _tokenURI Token
     /// @param _name Description of the NFT
     /// @param _description Description of the NFT
@@ -63,6 +64,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     /// @return newItemId New id of the item that has been minted
     function MintNFT(
         address _firstOwner,
+        address _creator,
         string memory _tokenURI,
         string memory _name,
         string memory _description,
@@ -88,7 +90,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], msg.sender, _firstOwner);   // Emit the event at each NFT created
+        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], _creator, _firstOwner);   // Emit the event at each NFT created
 
         return newItemId;
     }
