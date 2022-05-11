@@ -35,3 +35,20 @@
   text-decoration: none;
   width: 23%;
 }
+.container-form .row-form{
+  display: flex;
+}
+.container-form .row-form > label{
+  width: 20% !important;
+}
+.container-form .row-form > input, select, textarea{
+  width: 60% !important;
+}
+.div-btn{
+  width: 80% !important;
+  display: flex;
+  justify-content: flex-end;
+}
+.pointer-collection{
+  cursor: pointer;
+}
