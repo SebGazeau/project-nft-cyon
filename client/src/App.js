@@ -16,7 +16,7 @@ import About from "./Components/About.js";
 import Users from "./Components/Users.js";
 import CollectionDetails from "./Components/CollectionDetails";
 import NFTDetails from "./Components/NFTDetails";
-import Profile from "./Components/Profile";
+import UserProfile from "./Components/UserProfile";
 import CreateNFT from "./Components/CreateNFT";
 import CreateCollection from "./Components/CreateCollection";
 import Button from 'react-bootstrap/Button';
@@ -109,7 +109,7 @@ class App extends Component {
             </Navbar>
             <Routes>
               <Route path="/about"  element={<About state={this.state} />}/>
-              <Route path="/profile"  element={<Profile state={this.state} />}/>
+              <Route path="/profile"  element={<UserProfile state={this.state} />}/>
               <Route path="/create-nft"  element={<CreateNFT state={this.state} />}/>
               <Route path="/create-collection" element={<CreateCollection state={this.state} />}/>
               <Route path="/collection/:address"  element={<CollectionDetails state={this.state} />}/>

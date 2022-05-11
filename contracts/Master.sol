@@ -3,8 +3,13 @@ pragma solidity 0.8.13;
 
 import "./Auction.sol";
 import "./NFTCollectionFactory.sol";
-
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Master is Auction, NFTCollectionFactory {
+    IERC20 public tokenCYON;
+    constructor(address _addressCYON) {
+        tokenCYON = IERC20(_addressCYON);
+    }
+
     //------------------------------------------------------------------------------------
     // ----------------------------------Variables----------------------------------------
     //------------------------------------------------------------------------------------

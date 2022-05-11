@@ -8,11 +8,11 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
-import ProfileCollection from './ProfileCollection';
-import ProfileOfferReceived from './ProfileOfferReceived';
-import ProfileOfferMade from './ProfileOfferMade';
-import ProfileNFT from './ProfileNFT';
-export default class Profile extends React.Component {
+import UserCollection from './UserCollection';
+import UserOfferReceived from './UserOfferReceived';
+import UserOfferMade from './UserOfferMade';
+import UserNFT from './UserNFT';
+export default class UserProfile extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -31,10 +31,10 @@ export default class Profile extends React.Component {
       const project = () => {
         switch(this.state.keyTab) {
   
-          case "collection":   return <div id="collection-profile-container"><ProfileCollection selectCollection={this.selectedCollection}></ProfileCollection></div>;
-          case "nft":   return <ProfileNFT />;
-          case "received":   return <ProfileOfferReceived />;
-          case "made": return <ProfileOfferMade />;
+          case "collection":   return <div id="collection-profile-container"><UserCollection selectCollection={this.selectedCollection}></UserCollection></div>;
+          case "nft":   return <UserNFT />;
+          case "received":   return <UserOfferReceived />;
+          case "made": return <UserOfferMade />;
   
           default:      return <h1>No project match</h1>
         }

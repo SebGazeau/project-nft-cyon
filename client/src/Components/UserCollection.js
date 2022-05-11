@@ -1,16 +1,16 @@
 import React from 'react';
+import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Card from 'react-bootstrap/Card'
-import Container from 'react-bootstrap/Container'
-export default class ProfileNFT extends React.Component {
+
+export default class UserCollection extends React.Component {
     constructor(props) {
         super(props);
     }
     render()  {
       return (
         <div>
-            <h1>One Collection</h1>
-            <Container className="container-card">
+          <Container className="container-card">
               {[
                 'Primary',
                 'Secondary',
@@ -21,11 +21,10 @@ export default class ProfileNFT extends React.Component {
                 'Light',
                 'Dark',
               ].map((variant) => (
-                <div key={variant} className="link-collection pointer-collection m-2">
+                <div key={variant} className="link-collection pointer-collection m-2" onClick={() => {this.props.selectCollection('address')}}>
                   <Card bg={variant.toLowerCase()} text={variant.toLowerCase() === 'light' ? 'dark' : 'white'}>
                     <Card.Header>Header</Card.Header>
-                    <Card.Img variant="top" src="https://gateway.pinata.cloud/ipfs/QmPinxiZPrPp57gjCg7TbLmzbXtSTd1yrXHTj2qiBRNFCn/img.jpg" />
-                    <Card.Body>
+                    <Card.Body >
                       <Card.Title>{variant} Card Title </Card.Title>
                       <Card.Text>
                         Some quick example text to build on the card title and make up the
@@ -33,7 +32,7 @@ export default class ProfileNFT extends React.Component {
                       </Card.Text>
                     </Card.Body>
                   </Card>
-                </div>
+                  </div>
               ))}
             </Container>
         </div>

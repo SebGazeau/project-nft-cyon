@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import ListGroup from 'react-bootstrap/ListGroup'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
-export default class ProfileOfferReceived extends React.Component {
+export default class UserOfferReceived extends React.Component {
     constructor(props) {
         super(props);
     }
