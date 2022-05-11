@@ -30,7 +30,6 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     /// @param _collectionName Name of the NFT collection
     /// @param _tokenID The ID of this given NFT
     /// @param _collectionData Data of the given NFT
-    /// @param _timestamp Timestamp of the creation
     /// @param _creator The address of the creator of the NFT
     /// @param _firstOwner The first owner at the mint
     event NFTCreated(
