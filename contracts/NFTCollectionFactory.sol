@@ -9,7 +9,7 @@ import "./NFTCollections.sol";
 /// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollectionFactory {
     /// @notice event for collection creation
-    /// @param _collectionName NFT collection name
+    /// @param _collectionName Name of the NFT collection
     /// @param _collectionAddress Address of the collection
     /// @param _timestamp Timestamp of the creation
     event NFTCollectionCreated(
@@ -30,7 +30,7 @@ contract NFTCollectionFactory {
         // Import the bytecode of the contract to deploy
         bytes memory collectionBytecode = type(NFTCollections).creationCode;
         // Make a random salt based on the NFT name
-        bytes32 salt = keccak256(abi.encodePacked(_CollectionName));
+        bytes32 salt = keccak256(abi.encodePacked(_collectionName));
 
         assembly {
             collectionAddress := create2(
