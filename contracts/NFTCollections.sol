@@ -26,6 +26,22 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     }
     NFT[] collection;
 
+    /// @notice event for NFT creation
+    /// @param _collectionName Name of the NFT collection
+    /// @param _tokenID The ID of this given NFT
+    /// @param _collectionData Data of the given NFT
+    /// @param _timestamp Timestamp of the creation
+    /// @param _creator The address of the creator of the NFT
+    /// @param _firstOwner The first owner at the mint
+    event NFTCreated(
+        string _collectionName,
+        uint256 _tokenID,
+        NFT _collectionData,
+        uint256 _timestamp,
+        address _creator,
+        address _firstOwner
+    );
+
     /// @notice initialization of the ERC271
     /// @param _name name of the collection
     /// @param _symbol symbol of the collection
@@ -36,8 +52,8 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         __ERC721_init(_name, _symbol);
     }
 
-    /// @notice mint from the collection
-    /// @param _user NFT and collection user
+    /// @notice Mint a NFT in the collection
+    /// @param _firstOwner The address to mint the NFT to
     /// @param _tokenURI Token
     /// @param _name Description of the NFT
     /// @param _description Description of the NFT
@@ -47,8 +63,8 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     /// @param _favorite NFT favorite
     /// @param _isAuctionable NFT auctioned
     /// @return newItemId New id of the item that has been minted
-    function MintNFTCollection(
-        address _user,
+    function MintNFT(
+        address _firstOwner,
         string memory _tokenURI,
         string memory _name,
         string memory _description,
@@ -71,8 +87,10 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
             )
         );
         uint256 newItemId = _tokenIds.current();
-        _mint(_user, newItemId);
+        _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
+
+        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], block.timestamp, msg.sender, _firstOwner);   // Emit the event at each NFT created
 
         return newItemId;
     }
