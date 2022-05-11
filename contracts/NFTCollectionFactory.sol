@@ -9,23 +9,23 @@ import "./NFTCollections.sol";
 /// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollectionFactory {
     /// @notice event for collection creation
-    /// @param _CollectionName NFT collection name
+    /// @param _collectionName NFT collection name
     /// @param _collectionAddress Address of the collection
     /// @param _timestamp Timestamp of the creation
     event NFTCollectionCreated(
-        string _CollectionName,
+        string _collectionName,
         address _collectionAddress,
         uint256 _timestamp,
         address _creator
     );
 
     /// @notice creation of a NFT Collection
-    /// @param _CollectionName NFT name
-    /// @param _CollectionSymbol Symbol of the NFT collection
+    /// @param _collectionName NFT name
+    /// @param _collectionSymbol Symbol of the NFT collection
     /// @return collectionAddress Address of the collection
     function createNFTCollection(
-        string memory _CollectionName,
-        string memory _CollectionSymbol
+        string memory _collectionName,
+        string memory _collectionSymbol
     ) external returns (address collectionAddress) {
         // Import the bytecode of the contract to deploy
         bytes memory collectionBytecode = type(NFTCollections).creationCode;
@@ -45,9 +45,9 @@ contract NFTCollectionFactory {
             }
         }
         // Initialize the collection contract with the NFTCollections settings
-        NFTCollections(collectionAddress).initialize(_CollectionName, _CollectionSymbol);
+        NFTCollections(collectionAddress).initialize(_collectionName, _collectionSymbol);
 
         // Event avec un timestamp
-        emit NFTCollectionCreated(_CollectionName, collectionAddress, block.timestamp, msg.sender);
+        emit NFTCollectionCreated(_collectionName, collectionAddress, block.timestamp, msg.sender);
     }
 }
