@@ -16,12 +16,12 @@ contract Master is Auction, NFTCollectionFactory {
     //------------------------------------------------------------------------------------
     // -----------------------------------Functions---------------------------------------
     //------------------------------------------------------------------------------------
-    function createNFT(address _collectionAddress, address _user, string memory _tokenURI, string memory _name, 
-        string memory _description, string memory _tag, address _tokenAddress) external {
+    function createNFT(address _collectionAddress, address _firstOwner, string memory _tokenURI, string memory _name, 
+        string memory _description, string memory _tag) external {
             require(_collectionAddress != address(0),"The collection address needs to be different from zero.");
-            require(_user != address(0),"The user address needs to be different from zero.");  
+            require(_firstOwner != address(0),"The user address needs to be different from zero.");  
 
-            NFTCollections(_collectionAddress).MintNFT(_user,_tokenURI,_name,_description,_tag,_tokenAddress,0,false,false);
+            NFTCollections(_collectionAddress).MintNFT(_firstOwner,_tokenURI,_name,_description,_tag,address(0),0,false,false);
         }
 
 
