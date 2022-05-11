@@ -4,9 +4,16 @@ import Figure from 'react-bootstrap/Figure'
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button';
 export default class NFTDetails extends React.Component {
     constructor(props) {
         super(props);
+    }
+    makeOffer = () => {
+        console.log('make offer')
+    }
+    buyNow = () => {
+        console.log('buy now')
     }
     render()  {
       return (
@@ -32,6 +39,21 @@ export default class NFTDetails extends React.Component {
                 </Col>
                 <Col className="ms-3">
                     <h3>Title NFT</h3>
+                    <Card className="my-3">
+                        <Card.Body>
+                            <div>
+                                <span>Current price</span>
+                                <div>
+                                    <span>symbol</span>
+                                    <span>price</span>
+                                </div>
+                            </div>
+                            <div>
+                                <Button className="mx-2" onClick={this.buyNow}>Buy now</Button>
+                                <Button className="mx-2" variant="outline-primary" onClick={this.makeOffer}>Make offer</Button>
+                            </div>
+                        </Card.Body>
+                    </Card>
                     <Card>
                         <Card.Header>Header</Card.Header>
                         <Card.Body>

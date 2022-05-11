@@ -1,7 +1,9 @@
 import React, { Component } from "react";
+import Web3 from "web3";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import MasterContract from "./contracts/Master.json";
 import CYONTokenContract from "./contracts/CYONToken.json";
-import getWeb3 from "./getWeb3";
+// import getWeb3 from "./getWeb3";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -14,59 +16,66 @@ import About from "./Components/About.js";
 import Users from "./Components/Users.js";
 import CollectionDetails from "./Components/CollectionDetails";
 import NFTDetails from "./Components/NFTDetails";
+import Profile from "./Components/Profile";
+import CreateNFT from "./Components/CreateNFT";
+import CreateCollection from "./Components/CreateCollection";
+import Button from 'react-bootstrap/Button';
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
-
-  componentDidMount = async () => {
-    try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
-
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
-
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      console.log('networkId', networkId);
-      const deployedNetwork = CYONTokenContract.networks[networkId];
-      console.log('deployedNetwork',deployedNetwork);
-      const instance = new web3.eth.Contract(
-        CYONTokenContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
-        console.log(instance)
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
-      window.ethereum.on('accountsChanged', () => {
-        window.location.reload();
-      })
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
+    state = { storageValue: 0, web3: null, accounts: null, contractMaster: null, networkId: '1652257389587', contractCYON: null};
+    componentDidMount = async () => {
+        window.ethereum.on('connect', (connectInfo) =>{
+            console.log('eth connection')
+            const key = Object.keys(connectInfo);
+            if(key.length > 0 && key[0] === 'chainId'){
+                this.connect();
+            }
+        });
+        window.ethereum.on('accountsChanged', () => {
+            window.location.reload();
+        });
     }
-  };
-
-  runExample = async () => {
-    const { accounts, contract } = this.state;
-
-    // Stores a given value, 5 by default.
-    // await contract.methods.set(5).send({ from: accounts[0] });
-
-    // Get the value from the contract to prove it worked.
-    // const response = await contract.methods.get().call();
-
-    // Update state with the result.
-    // this.setState({ storageValue: response });
-  };
+    connect = async ()=>{
+        let web3;
+        try {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.enable();
+                } catch (error) {
+                    console.error(error);
+                }
+            } else if (window.web3) {
+                web3 = window.web3;
+            } else {
+                const provider = new Web3.providers.HttpProvider("http://127.0.0.1:8545");
+                web3 = new Web3(provider);
+            }
+            const accounts = await web3.eth.getAccounts();
+            const networkId = await web3.eth.net.getId();
+            const masterDeployedNetwork = MasterContract.networks[networkId];
+            const CYONDeployedNetwork = CYONTokenContract.networks[networkId];
+            const masterInstance = new web3.eth.Contract(
+                MasterContract.abi,
+                masterDeployedNetwork && masterDeployedNetwork.address,
+            );
+            const cyonInstance = new web3.eth.Contract(
+              CYONTokenContract.abi,
+              CYONDeployedNetwork && CYONDeployedNetwork.address,
+          );
+            console.log('masterInstance',masterInstance);
+            this.setState({ 
+              web3, 
+              accounts, 
+              contractMaster: masterInstance, 
+              contractCYON: cyonInstance, 
+              networkId: networkId 
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
   render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
     return (
       <div className="App">
         <Router>
@@ -78,7 +87,7 @@ class App extends Component {
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto">
                       <Link className="nav-link" to="/">Home</Link>
-                      <Link className="nav-link" to="/about">About</Link>
+                      {/* <Link className="nav-link" to="/about">About</Link> */}
                       <NavDropdown title={
                           <div className="pull-left">
                               <img className="nav-dropdown-img" 
@@ -88,20 +97,25 @@ class App extends Component {
                           </div>
                         } 
                         id="basic-nav-dropdown">
-                        <Link className="dropdown-item" to="/about">Profile</Link>
-                        <Link className="dropdown-item" to="/about">Create NFT</Link>
-                        <Link className="dropdown-item" to="/about">Create Collection</Link>
+                        <Link className="dropdown-item" to="/profile">Profile</Link>
+                        <Link className="dropdown-item" to="/create-nft">Create NFT</Link>
+                        <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
                       </NavDropdown>
                   </Nav>
+                      <Button className="" onClick={this.connect}>Connect</Button>
                 </Navbar.Collapse>
+
               </Container>
             </Navbar>
             <Routes>
               <Route path="/about"  element={<About state={this.state} />}/>
+              <Route path="/profile"  element={<Profile state={this.state} />}/>
+              <Route path="/create-nft"  element={<CreateNFT state={this.state} />}/>
+              <Route path="/create-collection" element={<CreateCollection state={this.state} />}/>
               <Route path="/collection/:address"  element={<CollectionDetails state={this.state} />}/>
               <Route path="/collection/nft/:address"  element={<NFTDetails state={this.state} />}/>
               <Route path="/users" element={<Users />}/>
-              <Route path="/" element={<Home storageValue={this.state.storageValue}/>} />
+              <Route path="/" element={<Home state={this.state}/>} />
             </Routes>
           </div>
         </Router>

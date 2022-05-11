@@ -1,22 +1,63 @@
 import React from 'react';
+import Web3 from "web3";
+import NFTCollectionsContract from "../contracts/NFTCollections.json";
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
+import Button from 'react-bootstrap/Button'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 export default class Home extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  changeFilter = (event) => {
-    const filter = event.target.dataset.rrUiEventKey;
-    console.log('event', event.target.dataset.rrUiEventKey)
-  };
-  selectCollection = (address) => {
+    REACT_VERSION = React.version;
+    constructor(props) {
+        super(props);
+        this.state = {
+            arrayCollection: [],
+        }
+    }
+    componentDidMount = async () => {
+        // window.addEventListener('load', () =>{
+            console.log('for call', this.props)
+            setTimeout(this.collection, 3000)
+            // await ;
+        // })
+    }
+    changeFilter = (event) => {
+        const filter = event.target.dataset.rrUiEventKey;
+        console.log('event', event.target.dataset.rrUiEventKey)
+    };
+    selectCollection = (address) => {
       
-      console.log('address -', address);
+        console.log('address -', address);
       // this.navigate({to:`/collection/${address}`})
       // history.push(`/collection/${address}`)
     }
+    collection = async (e) => {
+          let options = {
+              fromBlock: 0,              
+              toBlock: 'latest'
+          };
+          console.log('collection', this.props.state)
+          if(this.props.state.contractMaster){
+            const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
+
+              const collectionCreated = await this.props.state.contractMaster.getPastEvents('NFTCollectionCreated', options);
+              console.log('collectionCreated', collectionCreated)
+              if(collectionCreated.length > 0){
+                for(const cc of collectionCreated){            
+                  const nftCollectionInstance = new this.props.state.web3.eth.Contract(
+                      NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
+                  );
+                  console.log(nftCollectionInstance)
+                  this.setState({
+                    arrayCollection: this.state.arrayCollection.concat([
+                      {name: cc.returnValues._NFTName, address: cc.returnValues._collectionAddress}
+                    ])
+                  })
+                }
+
+              }
+          }
+      }
     render()  {
       return (
         <div className="mt-3">
@@ -34,27 +75,18 @@ export default class Home extends React.Component {
                 </Nav.Link>
               </Nav.Item>
             </Nav>
+            {/* <Button onClick={this.collection}>click</Button> */}
           </Container>
             <h1>Collections</h1>
             <Container className="container-card">
-              {[
-                'Primary',
-                'Secondary',
-                'Success',
-                'Danger',
-                'Warning',
-                'Info',
-                'Light',
-                'Dark',
-              ].map((variant) => (
-                <Link key={variant} className="link-collection m-2" to={`/collection/${variant}`}>
-                  <Card bg={variant.toLowerCase()} text={variant.toLowerCase() === 'light' ? 'dark' : 'white'}>
-                    <Card.Header>Header</Card.Header>
+              {this.state.arrayCollection.map((collection, index) => (
+                <Link key={index} className="link-collection m-2" to={`/collection/${collection.address}`}>
+                  <Card bg={'light'} text={'dark'}>
+                    <Card.Header>{collection.name}</Card.Header>
                     <Card.Body onClick={() => {this.selectCollection('address')}}>
-                      <Card.Title>{variant} Card Title </Card.Title>
+                      <Card.Title>coming soon</Card.Title>
                       <Card.Text>
-                        Some quick example text to build on the card title and make up the
-                        bulk of the card's content.
+                      coming soon
                       </Card.Text>
                     </Card.Body>
                   </Card>
@@ -64,4 +96,4 @@ export default class Home extends React.Component {
         </div>
       );
     }
-  }
+}
