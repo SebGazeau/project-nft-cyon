@@ -37,7 +37,6 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         string _collectionName,
         uint256 _tokenID,
         NFT _collectionData,
-        uint256 _timestamp,
         address _creator,
         address _firstOwner
     );
@@ -90,7 +89,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], block.timestamp, msg.sender, _firstOwner);   // Emit the event at each NFT created
+        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], msg.sender, _firstOwner);   // Emit the event at each NFT created
 
         return newItemId;
     }
