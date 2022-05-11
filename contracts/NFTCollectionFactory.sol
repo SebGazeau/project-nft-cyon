@@ -9,28 +9,28 @@ import "./NFTCollections.sol";
 /// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollectionFactory {
     /// @notice event for collection creation
-    /// @param _NFTName NFT name
+    /// @param _CollectionName NFT collection name
     /// @param _collectionAddress Address of the collection
     /// @param _timestamp Timestamp of the creation
     event NFTCollectionCreated(
-        string _NFTName,
+        string _CollectionName,
         address _collectionAddress,
         uint256 _timestamp,
         address _creator
     );
 
     /// @notice creation of a NFT Collection
-    /// @param _NFTName NFT name
-    /// @param _NFTSymbole Symbol of the NFT
+    /// @param _CollectionName NFT name
+    /// @param _CollectionSymbol Symbol of the NFT collection
     /// @return collectionAddress Address of the collection
     function createNFTCollection(
-        string memory _NFTName,
-        string memory _NFTSymbole
+        string memory _CollectionName,
+        string memory _CollectionSymbol
     ) external returns (address collectionAddress) {
         // Import the bytecode of the contract to deploy
         bytes memory collectionBytecode = type(NFTCollections).creationCode;
         // Make a random salt based on the NFT name
-        bytes32 salt = keccak256(abi.encodePacked(_NFTName));
+        bytes32 salt = keccak256(abi.encodePacked(_CollectionName));
 
         assembly {
             collectionAddress := create2(
@@ -45,9 +45,9 @@ contract NFTCollectionFactory {
             }
         }
         // Initialize the collection contract with the NFTCollections settings
-        NFTCollections(collectionAddress).initialize(_NFTName, _NFTSymbole);
+        NFTCollections(collectionAddress).initialize(_CollectionName, _CollectionSymbol);
 
         // Event avec un timestamp
-        emit NFTCollectionCreated(_NFTName, collectionAddress, block.timestamp, msg.sender);
+        emit NFTCollectionCreated(_CollectionName, collectionAddress, block.timestamp, msg.sender);
     }
 }
