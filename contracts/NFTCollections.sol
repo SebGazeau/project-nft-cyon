@@ -38,8 +38,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     /// @param _tokenID The ID of this given NFT
     /// @param _collectionData Data of the given NFT
     /// @param _creator The address of the creator of the NFT
-    /// @param _firstOwner The first owner at the mint
-    event NFTCreated(string _collectionName, address _collectionAddress, uint256 _tokenID, NFT _collectionData, address _creator, address _firstOwner);
+    event NFTCreated(string _collectionName, address _collectionAddress, uint256 _tokenID, NFT _collectionData, address _creator);
 
     /// @notice event for NFT sales
     /// @param _collectionName Name of the NFT collection
@@ -99,7 +98,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        emit NFTCreated(this.name(), address(this), newItemId, collection[newItemId-1], _creator, _firstOwner);   // Emit the event at each NFT created
+        emit NFTCreated(this.name(), address(this), newItemId, collection[newItemId-1], _creator);   // Emit the event at each NFT created
 
         return newItemId;
     }
