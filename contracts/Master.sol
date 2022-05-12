@@ -16,6 +16,14 @@ contract Master is Auction {
     //------------------------------------------------------------------------------------
     // ------------------------------------Events-----------------------------------------
     //------------------------------------------------------------------------------------
+    /// @notice event for NFT sales
+    /// @param _collectionName Name of the NFT collection
+    /// @param _collectionAddress Address of the collection
+    /// @param _tokenID The ID of this given NFT
+    /// @param _oldOwner Previous owner of the sold NFT
+    /// @param _newOwner New owner of the bought NFT
+    /// @param _price The sale price of the given NFT
+    event NFTSold(string _collectionName, address _collectionAddress, uint256 _tokenID, address _oldOwner, address _newOwner, uint256 _price);
 
     //------------------------------------------------------------------------------------
     // ----------------------------------Constructor--------------------------------------
@@ -83,6 +91,8 @@ contract Master is Auction {
 
         // Reset the price to 0 after the sale
         NFTCollections(_collectionAddress).setPrice(_tokenID,0);
+
+        emit NFTSold(NFTCollections(_collectionAddress).name(), _collectionAddress, _tokenID, currentOwner, msg.sender, price);
     }
 
 
