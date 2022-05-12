@@ -78,7 +78,7 @@ contract Master is Auction {
         require(sent, "Failed to send CYON to the NFT owner.");
 
         // Send the NFT to the new owner
-        require(NFTCollections(_collectionAddress).getApproved(_tokenID),"");       // Make sure the Master contract has the allowance to manage the NFT transfer
+        require(NFTCollections(_collectionAddress).getApproved(_tokenID) == address(this),"");       // Make sure the Master contract has the allowance to manage the NFT transfer
         NFTCollections(_collectionAddress).safeTransferFrom(currentOwner, msg.sender, _tokenID);
 
         // Reset the price to 0 after the sale
