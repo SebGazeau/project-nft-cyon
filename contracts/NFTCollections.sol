@@ -106,7 +106,7 @@ contract NFTCollections is ERC721URIStorage {
     /// @param _tokenID The token ID of the NFT to set the price
     /// @param _price The price to set
     function setPrice(uint256 _tokenID, uint256 _price) external {
-        // All the require are done on the upper level in Master SC
+        // All the "require" are done on the upper level in Master SC
         collection[_tokenID-1].price = _price;
 
         emit NewPriceSet(this.name(), address(this), _tokenID, _price);

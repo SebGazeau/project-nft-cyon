@@ -60,6 +60,31 @@ contract Master is Auction {
         NFTCollections(_collectionAddress).setPrice(_tokenID,_price);
     }
 
+    /// @notice This function allows to transfer the money to the NFT owner and the NFT to the buyer.
+    /// @dev Call this function when a buyer click on the BUY button
+    /// @param _collectionAddress The address of the collection of the NFT to be sold/transfered
+    /// @param _tokenID The token ID of the NFT to be sold/transfered
+    function buyNFT(address _collectionAddress, uint256 _tokenID) external payable {
+        // Global requires
+        require(_collectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
+        require((_tokenID <= NFTCollections(_collectionAddress).getTotalSupply()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
+        uint256 price = NFTCollections(_collectionAddress).getPrice(_tokenID);
+        require(price > 0,"This NFT is not for sale.");     // Make sure the NFT is for sale
+    
+        // Send the CYON to the current NFT owner
+        require(tokenCYON.allowance(msg.sender, address(this)) >= price, "CYON token allowance too low.");      // Make sure the Master contract has the allowance to manage the CYON transfer
+        address currentOwner = NFTCollections(_collectionAddress).ownerOf(_tokenID);
+        bool sent = tokenCYON.transfer(currentOwner, price);
+        require(sent, "Failed to send CYON to the NFT owner.");
+
+        // Send the NFT to the new owner
+        require(NFTCollections(_collectionAddress).getApproved(_tokenID),"");       // Make sure the Master contract has the allowance to manage the NFT transfer
+        NFTCollections(_collectionAddress).safeTransferFrom(currentOwner, msg.sender, _tokenID);
+
+        // Reset the price to 0 after the sale
+        NFTCollections(_collectionAddress).setPrice(_tokenID,0);
+    }
+
 
     //------------------------------------------------------------------------------------
     // ------------------------------------Getters----------------------------------------
