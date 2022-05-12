@@ -11,6 +11,9 @@ import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensi
 /// @author Sebastien Gazeau, Sébastien Dupertuis et Alexis Mendoza
 /// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
+    //------------------------------------------------------------------------------------
+    // ----------------------------------Variables----------------------------------------
+    //------------------------------------------------------------------------------------
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -26,26 +29,32 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     }
     NFT[] collection;
 
+    //------------------------------------------------------------------------------------
+    // ------------------------------------Events-----------------------------------------
+    //------------------------------------------------------------------------------------
     /// @notice event for NFT creation
     /// @param _collectionName Name of the NFT collection
+    /// @param _collectionAddress Address of the collection
     /// @param _tokenID The ID of this given NFT
     /// @param _collectionData Data of the given NFT
     /// @param _creator The address of the creator of the NFT
     /// @param _firstOwner The first owner at the mint
-    event NFTCreated(
-        string _collectionName,
-        uint256 _tokenID,
-        NFT _collectionData,
-        address _creator,
-        address _firstOwner
-    );
+    event NFTCreated(string _collectionName, address _collectionAddress, uint256 _tokenID, NFT _collectionData, address _creator, address _firstOwner);
 
+    /// @notice event for NFT sales
+    /// @param _collectionName Name of the NFT collection
+    /// @param _collectionAddress Address of the collection
+    /// @param _tokenID The ID of this given NFT
+    /// @param _price The new price of the given NFT
+    event NewPriceSet(string _collectionName, address _collectionAddress, uint256 _tokenID, uint256 _price);
+
+    //------------------------------------------------------------------------------------
+    // ----------------------------------Constructor--------------------------------------
+    //------------------------------------------------------------------------------------
     /// @notice initialization of the ERC271
     /// @param _name name of the collection
     /// @param _symbol symbol of the collection
-    function initialize(string memory _name, string memory _symbol)
-        public
-        initializer
+    function initialize(string memory _name, string memory _symbol) public initializer
     {
         __ERC721_init(_name, _symbol);
     }
@@ -90,8 +99,41 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        emit NFTCreated(this.name(), newItemId, collection[newItemId-1], _creator, _firstOwner);   // Emit the event at each NFT created
+        emit NFTCreated(this.name(), address(this), newItemId, collection[newItemId-1], _creator, _firstOwner);   // Emit the event at each NFT created
 
         return newItemId;
+    }
+
+    /// @notice This function allows to set the price of the given NFT
+    /// @dev Call this function when a sale is initiated
+    /// @param _tokenID The token ID of the NFT to set the price
+    /// @param _price The price to set
+    function setPrice(uint256 _tokenID, uint256 _price) external {
+        // All the require are done on the upper level in Master SC
+        collection[_tokenID-1].price = _price;
+
+        emit NewPriceSet(this.name(), address(this), _tokenID, _price);
+    }
+
+
+    //------------------------------------------------------------------------------------
+    // ------------------------------------Getters----------------------------------------
+    //------------------------------------------------------------------------------------
+    /// @notice This function allows to get the sale price of the given NFT (if in sale)
+    /// @dev Call this function to get the current sale price
+    /// @param _tokenID The token ID of the NFT to get the price
+    /// @return _price The price of the given NFT
+    function getPrice(uint256 _tokenID) external view returns (uint256) {
+        return(collection[_tokenID-1].price);
+    }
+
+    //------------------------------------------------------------------------------------
+    // ------------------------------------Getters----------------------------------------
+    //------------------------------------------------------------------------------------
+    /// @notice This function allows to get the total amount of NFTs saved in this contract
+    /// @dev Call this function to check the last created token ID
+    /// @return _totalSupply The last created token ID
+    function getTotalSupply() external view returns (uint256) {
+        return(_tokenIds.current());
     }
 }

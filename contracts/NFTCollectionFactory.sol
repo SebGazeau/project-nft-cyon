@@ -8,17 +8,21 @@ import "./NFTCollections.sol";
 /// @notice This contract allows to initialize collections of NFTs
 /// @dev The contract code contains comments for developers only visible in the source code
 contract NFTCollectionFactory {
+
+    //------------------------------------------------------------------------------------
+    // ------------------------------------Events-----------------------------------------
+    //------------------------------------------------------------------------------------
     /// @notice event for collection creation
     /// @param _collectionName Name of the NFT collection
     /// @param _collectionAddress Address of the collection
     /// @param _timestamp Timestamp of the creation
     event NFTCollectionCreated(
-        string _collectionName,
-        address _collectionAddress,
-        uint256 _timestamp,
-        address _creator
+        string _collectionName, address _collectionAddress, uint256 _timestamp, address _creator
     );
 
+    //------------------------------------------------------------------------------------
+    // -----------------------------------Functions---------------------------------------
+    //------------------------------------------------------------------------------------
     /// @notice creation of a NFT Collection
     /// @param _collectionName NFT name
     /// @param _collectionSymbol Symbol of the NFT collection
