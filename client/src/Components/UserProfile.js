@@ -31,8 +31,8 @@ export default class UserProfile extends React.Component {
       const project = () => {
         switch(this.state.keyTab) {
   
-          case "collection":   return <div id="collection-profile-container"><UserCollection selectCollection={this.selectedCollection}></UserCollection></div>;
-          case "nft":   return <UserNFT />;
+          case "collection":   return <div id="collection-profile-container"><UserCollection state={this.props.state} selectCollection={this.selectedCollection}></UserCollection></div>;
+          case "nft":   return <UserNFT state={this.props.state}/>;
           case "received":   return <UserOfferReceived />;
           case "made": return <UserOfferMade />;
   
@@ -46,13 +46,13 @@ export default class UserProfile extends React.Component {
 
           <Nav variant="pills" onSelect={this.handleSelect}>
             <Nav.Item>
-              <Nav.Link eventKey="collection" activeKey="collection">
+              <Nav.Link eventKey="collection" activekey="collection">
                 Collection
               </Nav.Link>
             </Nav.Item>
             <NavDropdown title="offers" id="nav-dropdown">
-              <NavDropdown.Item eventKey="received"  activeKey="offers">received</NavDropdown.Item>
-              <NavDropdown.Item eventKey="made"  activeKey="offers">made</NavDropdown.Item>
+              <NavDropdown.Item eventKey="received"  activekey="offers">received</NavDropdown.Item>
+              <NavDropdown.Item eventKey="made"  activekey="offers">made</NavDropdown.Item>
             </NavDropdown>
           </Nav>
           </Row>

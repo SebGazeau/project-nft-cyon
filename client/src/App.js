@@ -3,6 +3,7 @@ import Web3 from "web3";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MasterContract from "./contracts/Master.json";
 import CYONTokenContract from "./contracts/CYONToken.json";
+import NFTFactoryContract from "./contracts/NFTCollectionFactory.json";
 // import getWeb3 from "./getWeb3";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Navbar from 'react-bootstrap/Navbar'
@@ -21,7 +22,15 @@ import CreateNFT from "./Components/CreateNFT";
 import CreateCollection from "./Components/CreateCollection";
 import Button from 'react-bootstrap/Button';
 class App extends Component {
-    state = { storageValue: 0, web3: null, accounts: null, contractMaster: null, networkId: '1652257389587', contractCYON: null};
+    state = { 
+      storageValue: 0, 
+      web3: null, 
+      accounts: null, 
+      contractMaster: null, 
+      contractCYON: null,
+      contractFactory: null,
+      networkId: '42', 
+    };
     componentDidMount = async () => {
         window.ethereum.on('connect', (connectInfo) =>{
             console.log('eth connection')
@@ -54,6 +63,7 @@ class App extends Component {
             const networkId = await web3.eth.net.getId();
             const masterDeployedNetwork = MasterContract.networks[networkId];
             const CYONDeployedNetwork = CYONTokenContract.networks[networkId];
+            const NFTFactoryNetwork = NFTFactoryContract.networks[networkId];
             const masterInstance = new web3.eth.Contract(
                 MasterContract.abi,
                 masterDeployedNetwork && masterDeployedNetwork.address,
@@ -61,13 +71,18 @@ class App extends Component {
             const cyonInstance = new web3.eth.Contract(
               CYONTokenContract.abi,
               CYONDeployedNetwork && CYONDeployedNetwork.address,
-          );
+            );
+            const factoryInstance = new web3.eth.Contract(
+              NFTFactoryContract.abi,
+              NFTFactoryNetwork && NFTFactoryNetwork.address,
+            );
             console.log('masterInstance',masterInstance);
             this.setState({ 
               web3, 
               accounts, 
               contractMaster: masterInstance, 
               contractCYON: cyonInstance, 
+              contractFactory: factoryInstance,
               networkId: networkId 
             });
         } catch (error) {

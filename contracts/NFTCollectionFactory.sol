@@ -30,28 +30,9 @@ contract NFTCollectionFactory {
     function createNFTCollection(
         string memory _collectionName,
         string memory _collectionSymbol
-    ) external returns (address collectionAddress) {
-        // Import the bytecode of the contract to deploy
-        bytes memory collectionBytecode = type(NFTCollections).creationCode;
-        // Make a random salt based on the NFT name
-        bytes32 salt = keccak256(abi.encodePacked(_collectionName));
-
-        assembly {
-            collectionAddress := create2(
-                0,
-                add(collectionBytecode, 0x20),
-                mload(collectionBytecode),
-                salt
-            )
-            if iszero(extcodesize(collectionAddress)) {
-                // revert if something gone wrong (collectionAddress doesn't contain an address)
-                revert(0, 0)
-            }
-        }
-        // Initialize the collection contract with the NFTCollections settings
-        NFTCollections(collectionAddress).initialize(_collectionName, _collectionSymbol);
-
-        // Event avec un timestamp
+    ) external payable returns (address collectionAddress) {
+        bytes32 _salt = keccak256(abi.encodePacked(_collectionName));
+        collectionAddress = address(new NFTCollections{salt: _salt}(_collectionName, _collectionSymbol));
         emit NFTCollectionCreated(_collectionName, collectionAddress, block.timestamp, msg.sender);
     }
 }

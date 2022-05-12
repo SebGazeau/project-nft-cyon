@@ -7,7 +7,6 @@ import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 export default class Home extends React.Component {
-    REACT_VERSION = React.version;
     constructor(props) {
         super(props);
         this.state = {
@@ -37,11 +36,9 @@ export default class Home extends React.Component {
               toBlock: 'latest'
           };
           console.log('collection', this.props.state)
-          if(this.props.state.contractMaster){
+          if(this.props.state.contractFactory){
             const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
-
-              const collectionCreated = await this.props.state.contractMaster.getPastEvents('NFTCollectionCreated', options);
-              console.log('collectionCreated', collectionCreated)
+              const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
               if(collectionCreated.length > 0){
                 for(const cc of collectionCreated){            
                   const nftCollectionInstance = new this.props.state.web3.eth.Contract(

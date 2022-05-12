@@ -1,34 +1,66 @@
 import React from 'react';
+import NFTCollectionsContract from "../contracts/NFTCollections.json";
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 export default class UserCollection extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
+    this.state = {
+        arrayCollection: [],
     }
+}
+    componentDidMount = async () => {
+      // window.addEventListener('load', () =>{
+          console.log('for call', this.props)
+          setTimeout(this.collection, 3000)
+          // await ;
+      // })
+  }
+  selectCollection = (address) => {
+      
+    console.log('address -', address);
+  // this.navigate({to:`/collection/${address}`})
+  // history.push(`/collection/${address}`)
+}
+    collection = async (e) => {
+      let options = {
+          fromBlock: 0,              
+          toBlock: 'latest'
+      };
+      console.log('collection', this.props.state)
+      if(this.props.state.contractMaster){
+        const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
+          const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
+          if(collectionCreated.length > 0){
+            for(const cc of collectionCreated){            
+              const nftCollectionInstance = new this.props.state.web3.eth.Contract(
+                  NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
+              );
+              console.log(nftCollectionInstance)
+              this.setState({
+                arrayCollection: this.state.arrayCollection.concat([
+                  {name: cc.returnValues._NFTName, address: cc.returnValues._collectionAddress}
+                ])
+              })
+            }
+
+          }
+      }
+  }
     render()  {
       return (
         <div>
           <Container className="container-card">
-              {[
-                'Primary',
-                'Secondary',
-                'Success',
-                'Danger',
-                'Warning',
-                'Info',
-                'Light',
-                'Dark',
-              ].map((variant) => (
-                <div key={variant} className="link-collection pointer-collection m-2" onClick={() => {this.props.selectCollection('address')}}>
-                  <Card bg={variant.toLowerCase()} text={variant.toLowerCase() === 'light' ? 'dark' : 'white'}>
-                    <Card.Header>Header</Card.Header>
-                    <Card.Body >
-                      <Card.Title>{variant} Card Title </Card.Title>
+              {this.state.arrayCollection.map((collection, index) => (
+                <div key={index} className="link-collection pointer-collection m-2" onClick={() => {this.props.selectCollection(collection.address)}}>
+                  <Card bg={'light'} text={'dark'}>
+                  <Card.Header>{collection.name}</Card.Header>
+                    <Card.Body>
+                      <Card.Title>coming soon</Card.Title>
                       <Card.Text>
-                        Some quick example text to build on the card title and make up the
-                        bulk of the card's content.
+                      coming soon
                       </Card.Text>
                     </Card.Body>
                   </Card>

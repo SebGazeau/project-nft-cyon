@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 import "./Auction.sol";
 import "./NFTCollectionFactory.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-contract Master is Auction, NFTCollectionFactory {
+contract Master is Auction {
     
     
 

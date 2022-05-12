@@ -52,3 +52,17 @@
 .pointer-collection{
   cursor: pointer;
 }
+.container-form .row-file {
+  display: flex;
+  align-items: center;
+}
+.container-form .row-file > div{
+  display: flex;
+  width: 66% !important;
+}
+.container-form .row-file div > label{
+  width: 30% !important;
+}
+.container-form .row-file div > input{
+  width: 55% !important;
+}

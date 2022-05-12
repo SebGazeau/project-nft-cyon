@@ -1,8 +1,10 @@
-const Master = artifacts.require("./Master.sol");
+const Master = artifacts.require("Master");
 const CYONToken= artifacts.require('CYONToken');
-module.exports = function(deployer) {
+const NFTCollectionFactory= artifacts.require('NFTCollectionFactory');
+module.exports = async function(deployer) {
   await deployer.deploy(CYONToken, '10000000000000000000000000');
   const instance = await CYONToken.deployed();
   await instance.transfer(instance.address, '10000000000000000000000000');
-  deployer.deploy(Master, instance.address);
+  await deployer.deploy(Master, instance.address);
+  await deployer.deploy(NFTCollectionFactory);
 };

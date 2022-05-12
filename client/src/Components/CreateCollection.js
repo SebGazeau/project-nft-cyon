@@ -27,7 +27,7 @@ export default class CreateCollection extends React.Component {
       event.stopPropagation();
       console.log(this.props.state)
       console.log(this.state)
-      const createNFTCollection = await this.props.state.contractMaster.methods
+      const createNFTCollection = await this.props.state.contractFactory.methods
         .createNFTCollection(this.state.name,this.state.symbol)
         .send({from : this.props.state.accounts[0]});
       console.log('createNFTCollection', createNFTCollection)
@@ -46,10 +46,10 @@ export default class CreateCollection extends React.Component {
                       <Form.Label>Symbol *</Form.Label>
                       <Form.Control type="text" value={this.state.symbol} onChange={this.handleChangeSymbol} placeholder="CLN" />
                   </Form.Group>
-                  <Form.Group className="mb-3 row-form" controlId="formTextarea">
+                  {/* <Form.Group className="mb-3 row-form" controlId="formTextarea">
                       <Form.Label>Description</Form.Label>
                       <Form.Control as="textarea" value={this.state.description} onChange={this.handleChangeDescription} rows={3} />
-                  </Form.Group>
+                  </Form.Group> */}
                   <div className="div-btn">
                       <Button type="submit">Submit form</Button>
                   </div>

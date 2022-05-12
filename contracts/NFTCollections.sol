@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-//import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../node_modules/@openzeppelin/contracts/utils/Counters.sol";
-//import "../node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "../node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
-//import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// @title NFTCollections contract
 /// @author Sebastien Gazeau, Sébastien Dupertuis et Alexis Mendoza
 /// @dev The contract code contains comments for developers only visible in the source code
-contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
+contract NFTCollections is ERC721URIStorage {
     //------------------------------------------------------------------------------------
     // ----------------------------------Variables----------------------------------------
     //------------------------------------------------------------------------------------
@@ -28,7 +26,7 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
         bool isAuctionable;
     }
     NFT[] collection;
-
+    constructor(string memory _name, string memory _symbol) ERC721 (_name, _symbol) {}
     //------------------------------------------------------------------------------------
     // ------------------------------------Events-----------------------------------------
     //------------------------------------------------------------------------------------
@@ -50,13 +48,13 @@ contract NFTCollections is Initializable, ERC721URIStorageUpgradeable {
     //------------------------------------------------------------------------------------
     // ----------------------------------Constructor--------------------------------------
     //------------------------------------------------------------------------------------
-    /// @notice initialization of the ERC271
-    /// @param _name name of the collection
-    /// @param _symbol symbol of the collection
-    function initialize(string memory _name, string memory _symbol) public initializer
-    {
-        __ERC721_init(_name, _symbol);
-    }
+    // /// @notice initialization of the ERC271
+    // /// @param _name name of the collection
+    // /// @param _symbol symbol of the collection
+    // function initialize(string memory _name, string memory _symbol) public initializer
+    // {
+    //     __ERC721_init(_name, _symbol);
+    // }
 
     /// @notice Mint a NFT in the collection
     /// @param _firstOwner The address to mint the NFT to
