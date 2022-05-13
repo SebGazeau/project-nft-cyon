@@ -26,7 +26,11 @@ contract NFTCollections is ERC721URIStorage {
         bool isAuctionable;
     }
     NFT[] collection;
-    constructor(string memory _name, string memory _symbol) ERC721 (_name, _symbol) {}
+
+    constructor(string memory _name, string memory _symbol)
+        ERC721(_name, _symbol)
+    {}
+
     //------------------------------------------------------------------------------------
     // ------------------------------------Events-----------------------------------------
     //------------------------------------------------------------------------------------
@@ -36,14 +40,25 @@ contract NFTCollections is ERC721URIStorage {
     /// @param _tokenID The ID of this given NFT
     /// @param _collectionData Data of the given NFT
     /// @param _creator The address of the creator of the NFT
-    event NFTCreated(string _collectionName, address _collectionAddress, uint256 _tokenID, NFT _collectionData, address _creator);
+    event NFTCreated(
+        string _collectionName,
+        address _collectionAddress,
+        uint256 _tokenID,
+        NFT _collectionData,
+        address _creator
+    );
 
     /// @notice event for NFT sales
     /// @param _collectionName Name of the NFT collection
     /// @param _collectionAddress Address of the collection
     /// @param _tokenID The ID of this given NFT
     /// @param _price The new price of the given NFT
-    event NewPriceSet(string _collectionName, address _collectionAddress, uint256 _tokenID, uint256 _price);
+    event NewPriceSet(
+        string _collectionName,
+        address _collectionAddress,
+        uint256 _tokenID,
+        uint256 _price
+    );
 
     //------------------------------------------------------------------------------------
     // ----------------------------------Constructor--------------------------------------
@@ -96,7 +111,13 @@ contract NFTCollections is ERC721URIStorage {
         _mint(_firstOwner, newItemId);
         _setTokenURI(newItemId, _tokenURI);
 
-        emit NFTCreated(this.name(), address(this), newItemId, collection[newItemId-1], _creator);   // Emit the event at each NFT created
+        emit NFTCreated(
+            this.name(),
+            address(this),
+            newItemId,
+            collection[newItemId - 1],
+            _creator
+        ); // Emit the event at each NFT created
 
         return newItemId;
     }
@@ -107,11 +128,10 @@ contract NFTCollections is ERC721URIStorage {
     /// @param _price The price to set
     function setPrice(uint256 _tokenID, uint256 _price) external {
         // All the "require" are done on the upper level in Master SC
-        collection[_tokenID-1].price = _price;
+        collection[_tokenID - 1].price = _price;
 
         emit NewPriceSet(this.name(), address(this), _tokenID, _price);
     }
-
 
     //------------------------------------------------------------------------------------
     // ------------------------------------Getters----------------------------------------
@@ -121,14 +141,17 @@ contract NFTCollections is ERC721URIStorage {
     /// @param _tokenID The token ID of the NFT to get the price
     /// @return _price The price of the given NFT
     function getPrice(uint256 _tokenID) external view returns (uint256) {
-        require((_tokenID <= _tokenIds.current()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
-        return(collection[_tokenID-1].price);
+        require(
+            (_tokenID <= _tokenIds.current()) && (_tokenID > 0),
+            "This token ID does not exist."
+        ); // Make sure the token ID exists
+        return (collection[_tokenID - 1].price);
     }
 
     /// @notice This function allows to get the total amount of NFTs saved in this contract
     /// @dev Call this function to check the last created token ID
     /// @return _totalSupply The last created token ID
     function getTotalSupply() external view returns (uint256) {
-        return(_tokenIds.current());
+        return (_tokenIds.current());
     }
 }
