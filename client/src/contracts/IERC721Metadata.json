@@ -643,7 +643,11 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
+<<<<<<< Updated upstream
   "updatedAt": "2022-05-13T13:26:43.952Z",
+=======
+  "updatedAt": "2022-05-12T10:41:26.902Z",
+>>>>>>> Stashed changes
   "devdoc": {
     "details": "See https://eips.ethereum.org/EIPS/eip-721",
     "kind": "dev",

@@ -2565,7 +2565,11 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
+<<<<<<< Updated upstream
   "updatedAt": "2022-05-13T13:26:43.958Z",
+=======
+  "updatedAt": "2022-05-12T10:41:26.909Z",
+>>>>>>> Stashed changes
   "devdoc": {
     "details": "String operations.",
     "kind": "dev",
