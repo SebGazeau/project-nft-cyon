@@ -37,8 +37,8 @@ export default class UserProfile extends React.Component {
   
           case "collection":   return <div id="collection-profile-container"><UserCollection state={this.props.state} selectCollection={this.selectedCollection}></UserCollection></div>;
           case "nft":   return <UserNFT collectionSelected={this.state.collectionSelected} state={this.props.state}/>;
-          case "received":   return <UserOfferReceived />;
-          case "made": return <UserOfferMade />;
+          case "received":   return <UserOfferReceived state={this.props.state}/>;
+          case "made": return <UserOfferMade state={this.props.state}/>;
   
           default:      return <h1>No project match</h1>
         }
