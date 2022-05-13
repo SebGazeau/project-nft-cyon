@@ -7,7 +7,7 @@ export default class About extends React.Component {
     render()  {
       return (
         <div>
-          <SwapToken address={this.props.state.accounts[0]} instance={this.props.state.contract}/>
+          <SwapToken address={this.props.state.accounts[0]} instance={this.props.state.contractCYON}/>
         </div>
       );
     }

@@ -31,6 +31,10 @@ export default class CreateCollection extends React.Component {
         .createNFTCollection(this.state.name,this.state.symbol)
         .send({from : this.props.state.accounts[0]});
       console.log('createNFTCollection', createNFTCollection)
+      if(createNFTCollection){
+        const origin = window.location.origin;
+        window.location.href = origin;
+      }
     }
     render()  {
       return (

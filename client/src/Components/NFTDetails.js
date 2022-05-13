@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button';
+import BN from 'bn.js'
 export default class NFTDetails extends React.Component {
     address = window.location.pathname.split('/')[3]
     tokenID = window.location.pathname.split('/')[4]
@@ -24,8 +25,22 @@ export default class NFTDetails extends React.Component {
     makeOffer = () => {
         console.log('make offer')
     }
-    buyNow = () => {
-        console.log('buy now')
+    buyNow = async () => {
+        console.log('buy now', this.state.NFTDetails.price)
+        if(this.state.NFTDetails.price != 0){
+            console.log('address master', this.props.state.contractMaster._address)
+            await this.props.state.contractCYON.methods.approve(this.props.state.contractMaster._address,new BN((this.state.NFTDetails.price).toString())).send({from: this.props.state.accounts[0]});
+            const allowance = await this.props.state.contractCYON.methods.allowance(this.props.state.accounts[0],this.props.state.contractMaster._address).call();
+            const balSender = await this.props.state.contractCYON.methods.balanceOf(this.props.state.accounts[0]).call();
+            const balMaster = await this.props.state.contractCYON.methods.balanceOf(this.props.state.contractMaster._address).call();
+            console.log('allowance',allowance)
+            console.log('balMaster',balMaster)
+            console.log('balSender',balSender)
+            console.log('address',this.address)
+            console.log('tokenID',this.tokenID)
+            const res = await this.props.state.contractMaster.methods.buyNFT(this.address, this.tokenID).send({from: this.props.state.accounts[0]});
+            console.log('res', res)
+        }
     }
     nftDetails = async (e) =>{
         let options = {
@@ -45,15 +60,21 @@ export default class NFTDetails extends React.Component {
             // if(NFTCreated.length > 0){
             //   for(const cc of NFTCreated){            
                 console.log('cc', cc)
+                console.log('this.token', this.tokenID)
+                console.log('returnValues._tokenID', cc.returnValues._tokenID)
                 const firstUri = await nftCollectionInstance.methods.tokenURI(cc.returnValues._tokenID).call();
-                console.log('firstUri', firstUri)
+                const getPrice = await nftCollectionInstance.methods.getPrice(cc.returnValues._tokenID).call();
+                const owner = await nftCollectionInstance.methods.ownerOf(cc.returnValues._tokenID).call();
+                const owner2 = await nftCollectionInstance.methods.ownerOf(this.tokenID).call();
+                console.log('owner', owner)
+                console.log('owner2', owner2)
                 this.setState({
                   NFTDetails: {
                     name: cc.returnValues._collectionData.name, 
                     tokenAddress: cc.returnValues._collectionData.tokenAddress, 
                     description: cc.returnValues._collectionData.description, 
                     tag: cc.returnValues._collectionData.tag, 
-                    price: cc.returnValues._collectionData.price, 
+                    price: getPrice, 
                     isAuctionable: false, // call getter auction
                     url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
                   }
@@ -72,7 +93,7 @@ export default class NFTDetails extends React.Component {
             if(this.state.NFTDetails.price != '0') {
                 return <>
                     <div>
-                        <span>Current price : {}</span><div>{this.token()}<span>price</span></div>
+                        <span>Current price : {}</span><div><span>{(this.state.NFTDetails.price/10**18)}</span> CYON</div>
                     </div>
                     <div>
                         <Button className="mx-2" onClick={this.buyNow}>Buy now</Button>
@@ -83,13 +104,13 @@ export default class NFTDetails extends React.Component {
             }
         }
     }
-    token = () => {
-        if(this.state.NFTDetails.tokenAddress.toLowerCase() == this.store.state.contractCYON._address.toLowerCase()){
-            return <span>CYON</span>
-        }else{
-            return <span>ETH</span>
-        }
-    }
+    // token = () => {
+    //     if(this.state.NFTDetails.tokenAddress.toLowerCase() == this.store.state.contractCYON._address.toLowerCase()){
+    //         return <span>CYON</span>
+    //     }else{
+    //         return <span>ETH</span>
+    //     }
+    // }
     payment = () => {
         if(this.state.NFTDetails.isAuctionable){
             return <Button className="mx-2" variant="outline-primary" onClick={this.makeOffer}>Make offer</Button>
@@ -98,7 +119,9 @@ export default class NFTDetails extends React.Component {
     historyTrading = () => {
         const hasCurrentAction = false;
         if(hasCurrentAction){
-            
+            return <>{this.historyCurrentAuction()}</>
+        }else{
+            return <>{this.historyPrice()}</>
         }
     }
     historyPrice = () => {

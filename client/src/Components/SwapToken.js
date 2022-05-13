@@ -14,7 +14,8 @@ export default class SwapToken extends React.Component {
         this.state = {
             show: false,
             setShow: false,
-            validated: false
+            validated: false,
+            balance: -1,
         }
     }
     // const [validated, setValidated] = useState(false);
@@ -41,7 +42,14 @@ export default class SwapToken extends React.Component {
       this.setState({validated: true});
     };
     handleClose = () => this.setState({ show: false});
-    handleShow = () => this.setState({ show: true});
+    handleShow =async  () => {
+      const balance = await this.props.instance.methods.balanceOf( this.props.address).call();
+      console.log('balance',balance)
+      this.setState({
+          balance: balance,
+         show: true
+        })
+    };
     
     render()  {
       return (
@@ -68,6 +76,7 @@ export default class SwapToken extends React.Component {
                             </div>
                         </Tab>
                         <Tab eventKey="eth" title="CYON &rArr; ETH">
+                          <div>{this.state.balance}</div>
                             <div>
                                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                                     <Form.Control required size="sm" type="number" name="eth-to-cyon" step="0.00000001" placeholder="0.00000001" />

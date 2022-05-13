@@ -29,7 +29,7 @@ class App extends Component {
       contractMaster: null, 
       contractCYON: null,
       contractFactory: null,
-      networkId: '1652446396140', 
+      networkId: '42', 
     };
     componentDidMount = async () => {
         window.ethereum.on('connect', (connectInfo) =>{
@@ -40,7 +40,10 @@ class App extends Component {
             }
         });
         window.ethereum.on('accountsChanged', () => {
-            window.location.reload();
+            const origin = window.location.origin;
+            window.location.href = origin;
+            // setTimeout(window.location.reload(), 300)
+            
         });
     }
     connect = async ()=>{
@@ -61,7 +64,6 @@ class App extends Component {
             }
             const accounts = await web3.eth.getAccounts();
             const networkId = await web3.eth.net.getId();
-            console.log('networkId', networkId);
             const masterDeployedNetwork = MasterContract.networks[networkId];
             const CYONDeployedNetwork = CYONTokenContract.networks[networkId];
             const NFTFactoryNetwork = NFTFactoryContract.networks[networkId];
@@ -103,7 +105,7 @@ class App extends Component {
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto">
                       <Link className="nav-link" to="/">Home</Link>
-                      {/* <Link className="nav-link" to="/about">About</Link> */}
+                      <Link className="nav-link" to="/about">About</Link>
                       <NavDropdown title={
                           <div className="pull-left">
                               <img className="nav-dropdown-img" 
@@ -118,7 +120,6 @@ class App extends Component {
                         <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
                       </NavDropdown>
                   </Nav>
-                  {this.state.networkId}
                       <Button className="" onClick={this.connect}>Connect</Button>
                 </Navbar.Collapse>
 

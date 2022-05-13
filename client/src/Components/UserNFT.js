@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import BN from 'bn.js'
 export default class UserNFT extends React.Component {
     constructor(props) {
         super(props);
@@ -13,27 +14,57 @@ export default class UserNFT extends React.Component {
           nftCollectionInstance: null,
           arrayNFT: [],
           show: false,
-          forSell: {
-            tokenID: '',
-            sale: '',
-            pricing: 0,
-          }
+          // forSell: {
+            tokenIDForSell: '',
+            saleForSell: '',
+            pricingForSell: 0,
+          // }
         }
     }
     handleClose = () => {
       this.setState({
         show:false,
-        forSell: {tokenID:''}
+        tokenIDForSell: ''
       })
     };
     handleShow = (id) => {
+      console.log('id', id)
       this.setState({
         show:true,
-        forSell: {tokenID:id}
+        tokenIDForSell: id,
       })
     };
+    cancelSell =async (id) => {
+      console.log('id', id)
+      // this.setState({
+      //   show:true,
+      //   tokenIDForSell: id,
+      // })
+      // await this.state.nftCollectionInstance.methods.approve('0x0',this.state.tokenIDForSell).send({from: this.props.state.accounts[0]});
+      await this.state.nftCollectionInstance.methods
+        .setPrice(id,0)
+        .send({from : this.props.state.accounts[0]});
+        alert(
+          `Use Metamask for cancel approval.`,
+        );
+        const profile = `${window.location.origin}/profile`;
+        window.location.href = profile;
+    };
     handleChange = (event) => {
+      console.log('event', event.target)
+      console.log('state', this.state)
       const { name, value } = event.target;
+      switch (name) {
+        case 'tokenID':
+          this.setState({tokenIDForSell: value});
+          break;
+        case 'sale':
+          this.setState({saleForSell: value});
+          break;
+        case 'pricing':
+          (value) ? this.setState({pricingForSell: parseInt(value)}) : this.setState({pricingForSell: value}) 
+          break;
+      }
       this.setState({
           forSell:{[name]: value}
       });
@@ -42,12 +73,21 @@ export default class UserNFT extends React.Component {
       event.preventDefault();
       event.stopPropagation();
       let selling;
-      if(this.state.forSell.sale === 'direct' && this.state.forSell.pricing != 0){
-        selling = await this.props.state.contractMaster.methods.setNewPrice(this.props.collectionSelected, this.state.forSell.tokenID, this.state.forSell.pricing);
+      console.log('collectionSelected',this.props.collectionSelected)
+      console.log('forSell',this.state)
+      if(this.state.saleForSell === 'direct' && this.state.pricingForSell != 0){
+        await this.state.nftCollectionInstance.methods.approve(this.props.state.contractMaster._address,this.state.tokenIDForSell).send({from: this.props.state.accounts[0]});
+        selling = await this.props.state.contractMaster.methods
+          .setNewPrice(this.props.collectionSelected, this.state.tokenIDForSell,new BN((this.state.pricingForSell*10**18).toString()))
+          .send({from : this.props.state.accounts[0]});
+
+      }else{
+        //
       }
+      console.log(selling)
       if(selling){
         const profile = `${window.location.origin}/profile`;
-        window.location.href = origin;
+        window.location.href = profile;
       }
     }
     componentDidMount = async () => {
@@ -77,7 +117,8 @@ export default class UserNFT extends React.Component {
               const owner = await nftCollectionInstance.methods.ownerOf(cc.returnValues._tokenID).call();
               if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
                 const firstUri = await nftCollectionInstance.methods.tokenURI(cc.returnValues._tokenID).call();
-                console.log('firstUri', firstUri)
+                const getPrice = await nftCollectionInstance.methods.getPrice(cc.returnValues._tokenID).call();
+                console.log('getPrice', getPrice)
                 this.setState({
                   arrayNFT: this.state.arrayNFT.concat([{
                     tokenID: cc.returnValues._tokenID,
@@ -85,7 +126,7 @@ export default class UserNFT extends React.Component {
                     tokenAddress: cc.returnValues._collectionData.tokenAddress, 
                     description: cc.returnValues._collectionData.description, 
                     tag: cc.returnValues._collectionData.tag, 
-                    price: cc.returnValues._collectionData.price, 
+                    price: getPrice, 
                     isAuctionable: cc.returnValues._collectionData.isAuctionable, 
                     url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
                   }])
@@ -100,11 +141,18 @@ export default class UserNFT extends React.Component {
     canSell = (price, tID) => {
       if(price == '0'){
         return <Button variant="primary" onClick={() => this.handleShow(tID)}>sell</Button>;
+      }else{
+        return <Button variant="primary" onClick={() => this.cancelSell(tID)}>Cancel Sell</Button>;
       }
     }
     needPrice = () => {
-      if(this.state.forSell.sale == 'direct'){
-        return <Form.Group className="mb-3 row-form" controlId="formPrice"><Form.Label>Your price in CYON</Form.Label><Form.Control required size="sm" type="number" value={this.state.forSell.pricing} name="price" step="0.00000001" placeholder="0.00000001" onChange={this.handleChangeToken}/></Form.Group>
+      if(this.state.saleForSell == 'direct'){
+        return <>
+          <Form.Group className="mb-3 row-form" controlId="formPrice">
+            <Form.Label>Your price in CYON</Form.Label>
+            <Form.Control required size="sm" type="number" value={this.state.pricingForSell} name="pricing" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
+          </Form.Group>
+        </>
       }
     }
     render()  {

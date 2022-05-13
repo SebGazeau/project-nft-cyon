@@ -84,11 +84,11 @@ contract Master is Auction {
         // Send the CYON to the current NFT owner
         require(tokenCYON.allowance(msg.sender, address(this)) >= price, "CYON token allowance too low.");      // Make sure the Master contract has the allowance to manage the CYON transfer
         address currentOwner = NFTCollections(_collectionAddress).ownerOf(_tokenID);
-        bool sent = tokenCYON.transfer(currentOwner, price);
+        bool sent = tokenCYON.transferFrom(msg.sender,currentOwner, price);
         require(sent, "Failed to send CYON to the NFT owner.");
 
         // Send the NFT to the new owner
-        require(NFTCollections(_collectionAddress).getApproved(_tokenID) == address(this),"");       // Make sure the Master contract has the allowance to manage the NFT transfer
+        require(NFTCollections(_collectionAddress).getApproved(_tokenID) == address(this),"This address does not have the allowance to send the NFT");       // Make sure the Master contract has the allowance to manage the NFT transfer
         NFTCollections(_collectionAddress).safeTransferFrom(currentOwner, msg.sender, _tokenID);
 
         // Reset the price to 0 after the sale
@@ -139,7 +139,7 @@ contract Master is Auction {
                 NFTCollections(_collectionAddress).setPrice(_tokenID,price);        // Update the price of the NFT for event tracking
             
                 // Send the NFT to the new owner
-                require(NFTCollections(_collectionAddress).getApproved(_tokenID) == address(this),"");       // Make sure the Master contract has the allowance to manage the NFT transfer
+                require(NFTCollections(_collectionAddress).getApproved(_tokenID) == address(this),"This address does not have the allowance to send the NFT");       // Make sure the Master contract has the allowance to manage the NFT transfer
                 NFTCollections(_collectionAddress).safeTransferFrom(currentOwner, highestBidder, _tokenID);
 
                 // Reset the price to 0 after the sale for price tracking
