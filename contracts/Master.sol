@@ -102,9 +102,10 @@ contract Master {
     //------------------------------------------------------------------------------------
     /// @notice This function returns the URI data of the given NFT
     /// @dev Call this function to get the metadata of the NFT
-    /// @param _tokenID The token ID of the NFT to get the price
+    /// @param _collectionAddress The address of the collection of the NFT to get the URI
+    /// @param _tokenID The token ID of the NFT to get the URI
     /// @return _URI The URI data
-    function getURI(uint256 _tokenID) external view returns (string memory) {
+    function getURI(address _collectionAddress, uint256 _tokenID) external view returns (string memory) {
         require((_tokenID <= NFTCollections(_collectionAddress).getTotalSupply()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
         return(NFTCollections(_collectionAddress).tokenURI(_tokenID));
     }
