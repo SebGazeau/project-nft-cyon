@@ -95,34 +95,29 @@ export default class CreateNFT extends React.Component {
         };
         console.log('formdata', formData)
         const res = await axios.post(url, formData, config);
-        // .then((response) => {
-        //     console.log(response.data);
-        //     res = response;
-        // })
-        // .catch((error) => {
-            // });
-            // console.log(this.props.state.contractMaster)
-        // if(!res.data.isDuplicate){
-            if(this.state.collection === ''){
-                const collectionCreated = await this.props.state.contractMaster.getPastEvents('NFTCollectionCreated', options);
-                const createNFTCollection = await this.props.state.contractMaster.methods
-                    .createNFTCollection(`temporary-${collectionCreated.length}`,this.state.symbol)
-                    .send({from : this.props.state.accounts[0]});
-                this.setState({collection :createNFTCollection.events.Transfer.returnValues._collectionAddress});
-            }
-            const createNFT = await this.props.state.contractMaster.methods
-                .createNFT(
-                    this.state.collection,this.props.state.accounts[0],
-                    res.data.IpfsHash,
-                    this.state.name,
-                    this.state.description,
-                    this.state.tag,
-                    )
+        if(this.state.collection === ''){
+            const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
+            const createNFTCollection = await this.props.state.contractMaster.methods
+                .createNFTCollection(`temporary-${collectionCreated.length}`,this.state.symbol)
                 .send({from : this.props.state.accounts[0]});
-            console.log('createNFT', createNFT)
-        // }
-    
-      }
+            this.setState({collection :createNFTCollection.events.Transfer.returnValues._collectionAddress});
+        }
+        const createNFT = await this.props.state.contractMaster.methods
+            .createNFT(
+                this.state.collection,this.props.state.accounts[0],
+                res.data.IpfsHash,
+                this.state.name,
+                this.state.description,
+                this.state.tag,
+                )
+            .send({from : this.props.state.accounts[0]});
+        console.log('createNFT', createNFT)
+        if(createNFT){
+            const origin = window.location.origin;
+            window.location.href = origin;
+        }
+    }
+
     collection = async (e) => {
         let options = {
             fromBlock: 0,              
@@ -132,7 +127,7 @@ export default class CreateNFT extends React.Component {
         if(this.props.state.contractMaster){
         //   const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
 
-            const collectionCreated = await this.props.state.contractMaster.getPastEvents('NFTCollectionCreated', options);
+            const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
             console.log('collectionCreated', collectionCreated)
             if(collectionCreated.length > 0){
               for(const cc of collectionCreated){            
@@ -140,11 +135,13 @@ export default class CreateNFT extends React.Component {
                 //     NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
                 // );
                 // console.log(nftCollectionInstance)
-                this.setState({
-                  listCollection: this.state.listCollection.concat([
-                    {name: cc.returnValues._NFTName, address: cc.returnValues._collectionAddress}
-                  ])
-                })
+                if(cc.returnValues._creator.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
+                    this.setState({
+                      listCollection: this.state.listCollection.concat([
+                        {name: cc.returnValues._collectionName, address: cc.returnValues._collectionAddress}
+                      ])
+                    })
+                }
               }
 
             }

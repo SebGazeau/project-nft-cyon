@@ -2,6 +2,7 @@ import React from 'react';
 import NFTCollectionsContract from "../contracts/NFTCollections.json";
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
+
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 export default class UserCollection extends React.Component {
@@ -9,6 +10,7 @@ export default class UserCollection extends React.Component {
     super(props);
     this.state = {
         arrayCollection: [],
+
     }
 }
     componentDidMount = async () => {
@@ -18,6 +20,7 @@ export default class UserCollection extends React.Component {
           // await ;
       // })
   }
+
   selectCollection = (address) => {
       
     console.log('address -', address);
@@ -34,16 +37,18 @@ export default class UserCollection extends React.Component {
         const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
           const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
           if(collectionCreated.length > 0){
-            for(const cc of collectionCreated){            
-              const nftCollectionInstance = new this.props.state.web3.eth.Contract(
-                  NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
-              );
-              console.log(nftCollectionInstance)
-              this.setState({
-                arrayCollection: this.state.arrayCollection.concat([
-                  {name: cc.returnValues._NFTName, address: cc.returnValues._collectionAddress}
-                ])
-              })
+            for(const cc of collectionCreated){   
+              if(cc.returnValues._creator.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
+                const nftCollectionInstance = new this.props.state.web3.eth.Contract(
+                    NFTCollectionsContract.abi, cc.returnValues._collectionAddress,
+                );
+                console.log(nftCollectionInstance)
+                this.setState({
+                  arrayCollection: this.state.arrayCollection.concat([
+                    {name: cc.returnValues._collectionName, address: cc.returnValues._collectionAddress}
+                  ])
+                })
+              }    
             }
 
           }
@@ -60,13 +65,14 @@ export default class UserCollection extends React.Component {
                     <Card.Body>
                       <Card.Title>coming soon</Card.Title>
                       <Card.Text>
-                      coming soon
+
                       </Card.Text>
                     </Card.Body>
                   </Card>
                   </div>
               ))}
             </Container>
+            
         </div>
       );
     }

@@ -18,13 +18,17 @@ export default class UserProfile extends React.Component {
       this.state = {
           keyTab: 'collection',
           setShow: false,
-          validated: false
+          validated: false,
+          collectionSelected: ''
       }
     }
     handleSelect = (eventKey) => this.setState({ keyTab: eventKey});
     selectedCollection = (val) =>{
       // console.log('selected', event.target.value)
-      this.setState({ keyTab: 'nft'});
+      this.setState({ 
+        keyTab: 'nft',
+        collectionSelected: val
+      });
       console.log('selected', val)
     }
     render()  {
@@ -32,7 +36,7 @@ export default class UserProfile extends React.Component {
         switch(this.state.keyTab) {
   
           case "collection":   return <div id="collection-profile-container"><UserCollection state={this.props.state} selectCollection={this.selectedCollection}></UserCollection></div>;
-          case "nft":   return <UserNFT state={this.props.state}/>;
+          case "nft":   return <UserNFT collectionSelected={this.state.collectionSelected} state={this.props.state}/>;
           case "received":   return <UserOfferReceived />;
           case "made": return <UserOfferMade />;
   

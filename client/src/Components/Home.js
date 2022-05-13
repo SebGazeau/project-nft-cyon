@@ -39,16 +39,25 @@ export default class Home extends React.Component {
           if(this.props.state.contractFactory){
             const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
               const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
+              console.log('collectionCreated', collectionCreated)
               if(collectionCreated.length > 0){
                 for(const cc of collectionCreated){            
                   const nftCollectionInstance = new this.props.state.web3.eth.Contract(
-                      NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
+                      NFTCollectionsContract.abi, cc.returnValues._collectionAddress,
                   );
                   console.log(nftCollectionInstance)
+                  const nftTransfer = await nftCollectionInstance.getPastEvents('Transfer', options);
+                  let firstUri;
+                  if(nftTransfer.length > 0){
+                    firstUri = await nftCollectionInstance.methods.tokenURI(nftTransfer[0].returnValues.tokenId).call();
+                    console.log('firstUri', firstUri)
+                  }
                   this.setState({
-                    arrayCollection: this.state.arrayCollection.concat([
-                      {name: cc.returnValues._NFTName, address: cc.returnValues._collectionAddress}
-                    ])
+                    arrayCollection: this.state.arrayCollection.concat([{
+                      name: cc.returnValues._collectionName, 
+                      address: cc.returnValues._collectionAddress, 
+                      url: (firstUri) ? `https://gateway.pinata.cloud/ipfs/${firstUri}` : ''
+                    }])
                   })
                 }
 
@@ -80,12 +89,13 @@ export default class Home extends React.Component {
                 <Link key={index} className="link-collection m-2" to={`/collection/${collection.address}`}>
                   <Card bg={'light'} text={'dark'}>
                     <Card.Header>{collection.name}</Card.Header>
-                    <Card.Body onClick={() => {this.selectCollection('address')}}>
+                    <Card.Img variant="top" src={collection.url} />
+                    {/* <Card.Body>
                       <Card.Title>coming soon</Card.Title>
                       <Card.Text>
                       coming soon
                       </Card.Text>
-                    </Card.Body>
+                    </Card.Body> */}
                   </Card>
                   </Link>
               ))}

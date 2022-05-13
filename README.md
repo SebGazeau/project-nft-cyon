@@ -2,7 +2,7 @@
 ## install project and start
 Avec ganache de lancé dans une autre console. 
 
-Pour le premier lancement : 
+Pour le premier lancement (git clone): 
 
 la commande `npm run i-local` installera les dependances pour la parti contract
 et leurs tests unitaire. 

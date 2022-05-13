@@ -29,7 +29,7 @@ class App extends Component {
       contractMaster: null, 
       contractCYON: null,
       contractFactory: null,
-      networkId: '42', 
+      networkId: '1652446396140', 
     };
     componentDidMount = async () => {
         window.ethereum.on('connect', (connectInfo) =>{
@@ -61,6 +61,7 @@ class App extends Component {
             }
             const accounts = await web3.eth.getAccounts();
             const networkId = await web3.eth.net.getId();
+            console.log('networkId', networkId);
             const masterDeployedNetwork = MasterContract.networks[networkId];
             const CYONDeployedNetwork = CYONTokenContract.networks[networkId];
             const NFTFactoryNetwork = NFTFactoryContract.networks[networkId];
@@ -117,6 +118,7 @@ class App extends Component {
                         <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
                       </NavDropdown>
                   </Nav>
+                  {this.state.networkId}
                       <Button className="" onClick={this.connect}>Connect</Button>
                 </Navbar.Collapse>
 
@@ -128,7 +130,7 @@ class App extends Component {
               <Route path="/create-nft"  element={<CreateNFT state={this.state} />}/>
               <Route path="/create-collection" element={<CreateCollection state={this.state} />}/>
               <Route path="/collection/:address"  element={<CollectionDetails state={this.state} />}/>
-              <Route path="/collection/nft/:address"  element={<NFTDetails state={this.state} />}/>
+              <Route path="/collection/nft/:address/:id"  element={<NFTDetails state={this.state} />}/>
               <Route path="/users" element={<Users />}/>
               <Route path="/" element={<Home state={this.state}/>} />
             </Routes>
