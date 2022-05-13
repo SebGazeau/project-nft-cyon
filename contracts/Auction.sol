@@ -202,4 +202,14 @@ contract Auction {
         require(_nftCollectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
         return(bidManager[_nftCollectionAddress][_nftTokenID].hasAuctionStarted);
     }
+
+    /// @notice This function allows to check the total bid of the user calling the message
+    /// @dev Call this function from the front to know how mush the bidder already bidded
+    /// @param _nftCollectionAddress Collection address of the given NFT
+    /// @param _nftTokenID Token ID of the given NFT
+    /// @return Returns the total amount the user bidded till now
+    function getTotalBid(address _nftCollectionAddress, uint _nftTokenID) external view returns (uint256) {
+        require(_nftCollectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
+        return(bidManager[_nftCollectionAddress][_nftTokenID].totalBid[msg.sender]);
+    }
 }
