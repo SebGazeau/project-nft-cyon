@@ -4,10 +4,12 @@ pragma solidity 0.8.13;
 import "./Auction.sol";
 import "./NFTCollectionFactory.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-contract Master is Auction {
-    
-    
 
+/// @title Master contract to manage the decentralized NFT market place 
+/// @author Sebastien Gazeau, Sébastien Dupertuis et Alexis Mendoza
+/// @notice This smart contract is the link between the Dapp and the subcontracts
+contract Master {
+    
     //------------------------------------------------------------------------------------
     // ----------------------------------Variables----------------------------------------
     //------------------------------------------------------------------------------------
@@ -75,7 +77,6 @@ contract Master is Auction {
     function buyNFT(address _collectionAddress, uint256 _tokenID) external payable {
         // Global requires
         require(_collectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
-        require((_tokenID <= NFTCollections(_collectionAddress).getTotalSupply()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
         uint256 price = NFTCollections(_collectionAddress).getPrice(_tokenID);
         require(price > 0,"This NFT is not for sale.");     // Make sure the NFT is for sale
     
@@ -99,5 +100,12 @@ contract Master is Auction {
     //------------------------------------------------------------------------------------
     // ------------------------------------Getters----------------------------------------
     //------------------------------------------------------------------------------------
-    
+    /// @notice This function returns the URI data of the given NFT
+    /// @dev Call this function to get the metadata of the NFT
+    /// @param _tokenID The token ID of the NFT to get the price
+    /// @return _URI The URI data
+    function getURI(uint256 _tokenID) external view returns (string memory) {
+        require((_tokenID <= NFTCollections(_collectionAddress).getTotalSupply()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
+        return(NFTCollections(_collectionAddress).tokenURI(_tokenID));
+    }
 }
