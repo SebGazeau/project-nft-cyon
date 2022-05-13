@@ -21,15 +21,13 @@ export default class UserOfferReceived extends React.Component {
           fromBlock: 0,              
           toBlock: 'latest'
       };
-      if(this.props.state.Master){
-        const instance = new this.props.state.web3.eth.Contract(
-            MasterContract.abi, this.address,
-        );
+      if(this.props.state.contractMaster){
 
-        console.log("instance="+instance);
-        this.setState({instance:instance})
-        const NFTSolded = await instance.getPastEvents('NFTSold', options);
-        console.log("NFTSolded.length="+NFTSolded.length);
+        const NFTSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
+        console.log("NFTSolded.length=",NFTSolded.length);
+
+
+
           /*if(NFTSolded.length > 0){
             for(const cc of NFTSolded){            
               const owner = await instance.methods.ownerOf(cc.returnValues._tokenID).call();
