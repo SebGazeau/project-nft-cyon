@@ -25,7 +25,8 @@ contract Master is Auction {
     /// @param _oldOwner Previous owner of the sold NFT
     /// @param _newOwner New owner of the bought NFT
     /// @param _price The sale price of the given NFT
-    event NFTSold(string _collectionName, address _collectionAddress, uint256 _tokenID, address _oldOwner, address _newOwner, uint256 _price);
+    /// @param _units The units of the sale
+    event NFTSold(string _collectionName, address _collectionAddress, uint256 _tokenID, address _oldOwner, address _newOwner, uint256 _price, string _units);
 
     //------------------------------------------------------------------------------------
     // ----------------------------------Constructor--------------------------------------
@@ -93,7 +94,7 @@ contract Master is Auction {
         // Reset the price to 0 after the sale
         NFTCollections(_collectionAddress).setPrice(_tokenID,0);
 
-        emit NFTSold(NFTCollections(_collectionAddress).name(), _collectionAddress, _tokenID, currentOwner, msg.sender, price);
+        emit NFTSold(NFTCollections(_collectionAddress).name(), _collectionAddress, _tokenID, currentOwner, msg.sender, price, "CYON");
     }
 
     /// @notice This function allows to initiate an auction by verifying owner and tokenID
@@ -144,7 +145,7 @@ contract Master is Auction {
                 // Reset the price to 0 after the sale for price tracking
                 NFTCollections(_collectionAddress).setPrice(_tokenID,0);
 
-                emit NFTSold(NFTCollections(_collectionAddress).name(), _collectionAddress, _tokenID, currentOwner, highestBidder, price);
+                emit NFTSold(NFTCollections(_collectionAddress).name(), _collectionAddress, _tokenID, currentOwner, highestBidder, price, "ETH");
             }
             
             // Reset the auction data
