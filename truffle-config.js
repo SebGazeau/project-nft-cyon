@@ -1,5 +1,5 @@
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// require('dotenv').config();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
 const path = require("path");
 module.exports = {
   /**
@@ -8,15 +8,15 @@ module.exports = {
 
   contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
-    // kovan: {
-    //     provider: () => new HDWalletProvider({
-    //       mnemonic: {
-    //         phrase: `${process.env.MNEMONIC}`,
-    //       },
-    //       providerOrUrl: `https://kovan.infura.io/v3/${process.env.INFURA_ID}`
-    //   }),
-    //   network_id: 42,
-    // },
+    kovan: {
+        provider: () => new HDWalletProvider({
+          mnemonic: {
+            phrase: `${process.env.MNEMONIC}`,
+          },
+          providerOrUrl: `https://kovan.infura.io/v3/${process.env.INFURA_ID}`
+      }),
+      network_id: 42,
+    },
 
     development: {
      host: "127.0.0.1",     // Localhost (default: none)
