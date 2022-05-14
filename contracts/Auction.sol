@@ -43,7 +43,6 @@ contract Auction {
     /// @param _nftTokenID Token ID of the given NFTe given NFT
     /// @param _currentOwner The current owner of the NFT
     function setAuctionValidity(address _nftCollectionAddress, uint _nftTokenID, address _currentOwner) internal {
-        require(_nftCollectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
         require(!bidManager[_nftCollectionAddress][_nftTokenID].hasAuctionStarted, "An auction has already started for this NFT.");    // Make sure an auction did not start yet
 
         bidManager[_nftCollectionAddress][_nftTokenID].currentOwner = _currentOwner;
