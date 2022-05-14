@@ -97,8 +97,9 @@ export default class CreateNFT extends React.Component {
         const res = await axios.post(url, formData, config);
         if(this.state.collection === ''){
             const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
-            const createNFTCollection = await this.props.state.contractMaster.methods
-                .createNFTCollection(`temporary-${collectionCreated.length}`,this.state.symbol)
+            const lengthForFactory = (collectionCreated)? 0 : collectionCreated.length;
+            const createNFTCollection = await this.props.state.contractFactory.methods
+                .createNFTCollection(`temporary-${lengthForFactory}`,this.state.symbol)
                 .send({from : this.props.state.accounts[0]});
             this.setState({collection :createNFTCollection.events.Transfer.returnValues._collectionAddress});
         }

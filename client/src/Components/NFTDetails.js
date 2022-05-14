@@ -77,8 +77,8 @@ export default class NFTDetails extends React.Component {
                     .isInAuction(this.address, cc.returnValues._tokenID)
                     .call({});
                 const auction = {};
+                auction.isInAuction = isInAuction;
                 if(isInAuction){
-                  auction.isInAuction = isInAuction;
                   const checkAuctionTimeExpired= await this.props.state.contractMaster.methods
                     .checkAuctionTimeExpired(this.address, cc.returnValues._tokenID)
                     .call();
@@ -120,7 +120,7 @@ export default class NFTDetails extends React.Component {
         console.log(this.state.NFTDetails.price != '0')
         console.log(parseInt(this.state.NFTDetails.price))
         if(this.state.NFTDetails.price != undefined){
-            if(this.state.NFTDetails.price != '0' && !this.state.auction.isInAuction) {
+            if(this.state.NFTDetails.price != '0' && !this.state.NFTDetails.auction.isInAuction) {
                 return <>
                     <div>
                         <span>Current price : {}</span><div><span>{(this.state.NFTDetails.price/10**18)}</span> CYON</div>
