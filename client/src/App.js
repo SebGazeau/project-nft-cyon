@@ -5,11 +5,14 @@ import MasterContract from "./contracts/Master.json";
 import CYONTokenContract from "./contracts/CYONToken.json";
 import NFTFactoryContract from "./contracts/NFTCollectionFactory.json";
 // import getWeb3 from "./getWeb3";
+import SwapToken from "./Components/SwapToken"
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Container from 'react-bootstrap/Container'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 import "./App.css";
 
 import Home from "./Components/Home.js";
@@ -26,12 +29,22 @@ class App extends Component {
       storageValue: 0, 
       web3: null, 
       accounts: null, 
+      balanceEth: '',
       contractMaster: null, 
       contractCYON: null,
       contractFactory: null,
       networkId: '42', 
     };
     componentDidMount = async () => {
+        window.addEventListener('load', ()=>{
+          // window.ethereum.on('connect', (connectInfo) =>{
+          //   console.log('eth connection')
+          //   const key = Object.keys(connectInfo);
+          //   if(key.length > 0 && key[0] === 'chainId'){
+                this.connect();
+          //   }
+          // });
+        })
         window.ethereum.on('connect', (connectInfo) =>{
             console.log('eth connection')
             const key = Object.keys(connectInfo);
@@ -63,6 +76,7 @@ class App extends Component {
                 web3 = new Web3(provider);
             }
             const accounts = await web3.eth.getAccounts();
+            const balanceEth = await web3.eth.getBalance(accounts[0])
             const networkId = await web3.eth.net.getId();
             const masterDeployedNetwork = MasterContract.networks[networkId];
             const CYONDeployedNetwork = CYONTokenContract.networks[networkId];
@@ -79,10 +93,10 @@ class App extends Component {
               NFTFactoryContract.abi,
               NFTFactoryNetwork && NFTFactoryNetwork.address,
             );
-            console.log('masterInstance',masterInstance);
             this.setState({ 
               web3, 
               accounts, 
+              balanceEth,
               contractMaster: masterInstance, 
               contractCYON: cyonInstance, 
               contractFactory: factoryInstance,
@@ -97,32 +111,55 @@ class App extends Component {
     return (
       <div className="App">
         <Router>
-          <div>
+          <div className="main-container-app-nft">
             <Navbar bg="dark" variant="dark">
               <Container>
-                <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+                <Navbar.Brand href="#home">Project NFT</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto">
                       <Link className="nav-link" to="/">Home</Link>
-                      <Link className="nav-link" to="/about">About</Link>
-                      <NavDropdown title={
-                          <div className="pull-left">
-                              <img className="nav-dropdown-img" 
-                                  src={window.location.origin + '/logo192.png'} 
-                                  alt="user pic"
-                              />
-                          </div>
-                        } 
-                        id="basic-nav-dropdown">
-                        <Link className="dropdown-item" to="/profile">Profile</Link>
-                        <Link className="dropdown-item" to="/create-nft">Create NFT</Link>
-                        <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
-                      </NavDropdown>
+                      {(this.state.accounts)
+                        ? <> 
+                            <OverlayTrigger 
+                              placement="right"
+                              overlay={
+                                <Tooltip id={'tooltip-nav'}>
+                                  Your Profile
+                                </Tooltip>
+                              }>
+                              <NavDropdown title={
+                                  <div className="pull-left">
+                                      <img className="nav-dropdown-img" 
+                                          src={window.location.origin + '/logo192.png'} 
+                                          alt="user pic"
+                                      />
+                                  </div>
+                                } 
+                                id="basic-nav-dropdown">
+                                <Link className="dropdown-item" to="/profile">Profile</Link>
+                                <Link className="dropdown-item" to="/create-nft">Create NFT</Link>
+                                <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
+                              </NavDropdown>
+                            </OverlayTrigger>
+                          </>
+                        : <></>
+                      }
                   </Nav>
-                      <Button className="" onClick={this.connect}>Connect</Button>
+                  {/* <Col> */}
+                    {(this.state.accounts)
+                      ? <>
+                          <div className="text-navbar">
+                            <span>{this.state.accounts[0]}</span><span>Swap Your eth in CYON for buy directly</span>
+                          </div>
+                          <SwapToken address={this.state.accounts[0]} instance={this.state.contractCYON} balanceEth={this.state.balanceEth}/>
+                        </>
+                      : <Button className="" onClick={this.connect}>Connect</Button>
+                    }
+                  {/* </Col> */}
+                      
                 </Navbar.Collapse>
-
+                  
               </Container>
             </Navbar>
             <Routes>
@@ -137,6 +174,7 @@ class App extends Component {
             </Routes>
           </div>
         </Router>
+        <span>made by Alexis, Sébastien & Sébastien</span>
       </div>
     );
   }

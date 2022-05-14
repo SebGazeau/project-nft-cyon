@@ -27,6 +27,15 @@
 .dropdown-toggle::after {
   display: none;
 }
+.main-container-app-nft{
+  min-height: 97vh;
+}
+.tab-swap-token{
+  flex-direction: row;
+}
+.tab-swap-token li button{
+  padding: 0.5em !important;
+}
 .container-card{
   display: flex;
   flex-wrap: wrap;
@@ -65,4 +74,24 @@
 }
 .container-form .row-file div > input{
   width: 55% !important;
+}
+.card-collection {
+  height: 200px !important;
+  object-fit: contain;
+}
+.image-nft-detail{
+  height: 300px !important;
+}
+.card-detail-price{
+  height: 255px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.text-navbar{
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  margin-right: 0.5em;
 }

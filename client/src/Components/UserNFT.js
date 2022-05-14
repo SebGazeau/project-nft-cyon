@@ -232,7 +232,7 @@ export default class UserNFT extends React.Component {
                 <div key={index} className="link-collection pointer-collection m-2">
                   <Card bg={'light'} text={'dark'}>
                     <Card.Header>{nft.name}</Card.Header>
-                    <Card.Img variant="top" src={nft.url} />
+                    <Card.Img className='card-collection' variant="top" src={nft.url} />
                     <Card.Body>
                       <Card.Title>Card Title </Card.Title>
                       <Card.Text>

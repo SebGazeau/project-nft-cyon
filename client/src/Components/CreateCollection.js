@@ -1,5 +1,4 @@
 import React from 'react';
-import SwapToken from './SwapToken';
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -22,7 +21,6 @@ export default class CreateCollection extends React.Component {
       this.setState({description: event.target.value});
     }
     handleSubmit = async (event) => {
-      const form = event.currentTarget;
       event.preventDefault();
       event.stopPropagation();
       console.log(this.props.state)

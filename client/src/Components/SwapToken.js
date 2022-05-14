@@ -43,7 +43,7 @@ export default class SwapToken extends React.Component {
     };
     handleClose = () => this.setState({ show: false});
     handleShow =async  () => {
-      const balance = await this.props.instance.methods.balanceOf( this.props.address).call();
+      const balance = await this.props.instance.methods.balanceOf(this.props.address).call();
       console.log('balance',balance)
       this.setState({
           balance: balance,
@@ -66,8 +66,9 @@ export default class SwapToken extends React.Component {
                     <Tabs defaultActiveKey="cyon"
                         transition={false}
                         id="tab-swap-token"
-                        className="mb-3">
+                        className="mb-3 tab-swap-token">
                         <Tab eventKey="cyon" title="ETH &rArr; CYON">
+                          <div>Your balance of ETH {(this.props.balanceEth/10**18)}</div>
                             <div>
                                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                                     <Form.Control required size="sm" type="number" name="cyon-to-eth" step="0.00000001" placeholder="0.00000001" />
@@ -76,7 +77,7 @@ export default class SwapToken extends React.Component {
                             </div>
                         </Tab>
                         <Tab eventKey="eth" title="CYON &rArr; ETH">
-                          <div>{this.state.balance}</div>
+                          <div>Your balance of CYON {(this.state.balance/10**18)}</div>
                             <div>
                                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                                     <Form.Control required size="sm" type="number" name="eth-to-cyon" step="0.00000001" placeholder="0.00000001" />

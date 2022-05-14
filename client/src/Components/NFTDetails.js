@@ -7,32 +7,50 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import ListGroup from 'react-bootstrap/ListGroup'
 import BN from 'bn.js'
 export default class NFTDetails extends React.Component {
+    options = {
+        fromBlock: 0,              
+        toBlock: 'latest'
+    };
     address = window.location.pathname.split('/')[3]
     tokenID = window.location.pathname.split('/')[4]
     constructor(props) {
         super(props);
         this.state = {
             NFTDetails: {},
-            pricingForBid: 0
+            pricingForBid: 0,
+            oldBid: 0,
+            historyBid: [],
         }
     }
     componentDidMount = async () => {
-        // window.addEventListener('load', () =>{
-            console.log('for nft', this.props)
-            // setTimeout(this.nftCollection, 3000)
-            this.nftDetails();
+        console.log('for nft', this.props)
+        this.nftDetails();
     }
     handleChange = (event) => {
-        console.log('change file', event.target)
-        const { name, value } = event.target;
+        let { name, value } = event.target;
+        // if(name === 'pricingForBid'){
+        //     value = (value) ? parseInt(value) : 0
+        // }
         this.setState({
             [name]: value
         });
     }
-    makeOffer = () => {
+    withdraw =async () => {
+        const res = await this.props.state.contractMaster.methods.withdrawRefund(this.address, this.tokenID).send({from: this.props.state.accounts[0]});
+    }
+    forceUpdateHandler = ()=>{
+        this.forceUpdate();
+    };
+    makeOffer = async () => {
         console.log('make offer')
+        if(this.state.pricingForBid != 0){
+            const res = await this.props.state.contractMaster.methods.bid(this.address, this.tokenID).send({from: this.props.state.accounts[0], value: (this.state.pricingForBid*10**18)});
+            console.log(res)
+            this.forceUpdateHandler();
+        }
     }
     buyNow = async () => {
         if(this.state.NFTDetails.price != 0){
@@ -75,7 +93,7 @@ export default class NFTDetails extends React.Component {
                 // console.log('owner2', owner2)
                 const isInAuction= await this.props.state.contractMaster.methods
                     .isInAuction(this.address, cc.returnValues._tokenID)
-                    .call({});
+                    .call();
                 const auction = {};
                 auction.isInAuction = isInAuction;
                 if(isInAuction){
@@ -87,16 +105,28 @@ export default class NFTDetails extends React.Component {
                     const getCurrentHighestBid= await this.props.state.contractMaster.methods
                       .getCurrentHighestBid(this.address, cc.returnValues._tokenID)
                       .call();
+                    const getCurrentHighestBidder= await this.props.state.contractMaster.methods
+                      .getCurrentHighestBidder(this.address, cc.returnValues._tokenID)
+                      .call();
                     const getBiddersAmount= await this.props.state.contractMaster.methods
                       .getBiddersAmount(this.address, cc.returnValues._tokenID)
                       .call();
                     const getTotalBid = await this.props.state.contractMaster.methods
                         .getTotalBid(this.address, cc.returnValues._tokenID)
-                        .call();
+                        .call({from: this.props.state.accounts[0]});
                     console.log('getTotalBid', getTotalBid)
+                    this.setState({oldBid: getTotalBid});
                     auction.getCurrentHighestBid = getCurrentHighestBid
+                    auction.getCurrentHighestBidder = getCurrentHighestBidder
                     auction.getBiddersAmount = getBiddersAmount
                   }
+                }
+                const HighestBidIncreased = await this.props.state.contractMaster.getPastEvents('HighestBidIncreased', this.options);
+                if(HighestBidIncreased.length > 0) {
+                    for(const HBI of HighestBidIncreased){
+                        console.log('hbi', HBI)
+                        this.setState({historyBid: this.state.historyBid.concat([HBI.returnValues._newBid])})
+                    }
                 }
                 this.setState({
                   NFTDetails: {
@@ -114,11 +144,11 @@ export default class NFTDetails extends React.Component {
             // }
         }
     }
+    isCurrentHighestBidder = () => {
+        return this.state.NFTDetails.getCurrentHighestBidder.toLowerCase() === this.props.state.accounts[0].toLowerCase()
+    }
     detailPrice = () => {   
         let html;
-        console.log(this.state.NFTDetails.price)
-        console.log(this.state.NFTDetails.price != '0')
-        console.log(parseInt(this.state.NFTDetails.price))
         if(this.state.NFTDetails.price != undefined){
             if(this.state.NFTDetails.price != '0' && !this.state.NFTDetails.auction.isInAuction) {
                 return <>
@@ -127,20 +157,30 @@ export default class NFTDetails extends React.Component {
                     </div>
                     <div>
 
-                        <Button className="mx-2" onClick={this.buyNow}>Bid</Button>
+                        <Button className="mx-2" onClick={this.buyNow}>Buy now</Button>
                     </div>
                 </>
             }else if(this.state.NFTDetails.auction.isInAuction && !this.state.NFTDetails.auction.expired){
                 return <>
                     <div>
-                        <span>Current Highest Bid : {this.state.NFTDetails.auction.getCurrentHighestBid} eth</span>
+                        {(this.isCurrentHighestBidder) 
+                            ? <span>you're the Current Highest Bidder with {(this.state.NFTDetails.auction.getCurrentHighestBid/10**18)} eth</span> 
+                            : <span>Current Highest Bid : {(this.state.NFTDetails.auction.getCurrentHighestBid/10**18)} eth</span>}
                     </div>
                     <div>                        
                         <Form.Group className="mb-3 row-form" controlId="formPriceBid">
                             <Form.Label>Bid in ETH</Form.Label>
                             <Form.Control required size="sm" type="number" value={this.state.pricingForBid} name="pricingForBid" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
                         </Form.Group>
-                        <Button className="mx-2" onClick={this.buyNow}>Buy now</Button>
+                        <div>
+                            {(this.state.oldBid > 0 && !this.isCurrentHighestBidder) 
+                                ? <span>your total old bid is {(this.state.oldBid/10**18)}</span> 
+                                : <span></span>}
+                        </div>
+                        <div>
+                            {this.canWithdraw()}
+                            <Button className="mx-2" onClick={this.makeOffer}>Bid</Button>
+                        </div>
                     </div>
                 </>
             }else{
@@ -148,47 +188,43 @@ export default class NFTDetails extends React.Component {
             }
         }
     }
-    // token = () => {
-    //     if(this.state.NFTDetails.tokenAddress.toLowerCase() == this.store.state.contractCYON._address.toLowerCase()){
-    //         return <span>CYON</span>
-    //     }else{
-    //         return <span>ETH</span>
-    //     }
-    // }
+    canWithdraw = () => {
+        if(this.state.oldBid > 0 && !this.isCurrentHighestBidder){
+            return <Button className="mx-2" onClick={this.withdraw}>Withdraw total old bid</Button>
+        }
+    }
     payment = () => {
         if(this.state.NFTDetails.isAuctionable){
             return <Button className="mx-2" variant="outline-primary" onClick={this.makeOffer}>Make offer</Button>
         }
     }
     historyTrading = () => {
-        const hasCurrentAction = false;
-        if(hasCurrentAction){
-            return <>{this.historyCurrentAuction()}</>
-        }else{
-            return <>{this.historyPrice()}</>
+        if(this.state.NFTDetails.auction != undefined){
+            const hasCurrentAction = this.state.NFTDetails.auction.isInAuction || false;
+            if(hasCurrentAction){
+                return <>{this.historyCurrentAuction()}</>
+            }else{
+                return <>{this.historyPrice()}</>
+            }
         }
     }
     historyPrice = () => {
         return <>
-            <Card.Header>Header</Card.Header>
+            <Card.Header>Price History</Card.Header>
             <Card.Body>
-                <Card.Title>Card Title </Card.Title>
-                <Card.Text>
-                    Some quick example text to build on the card title and make up the
-                    bulk of the card's content.
-                </Card.Text>
+
             </Card.Body>
         </>
     }
     historyCurrentAuction = () => {
         return <>
-            <Card.Header>Header</Card.Header>
+            <Card.Header>list History Auction</Card.Header>
             <Card.Body>
-                <Card.Title>Card Title </Card.Title>
-                <Card.Text>
-                    Some quick example text to build on the card title and make up the
-                    bulk of the card's content.
-                </Card.Text>
+                <ListGroup variant="flush">
+                {this.state.historyBid.map((bid, index) => (
+                    <ListGroup.Item key={index}>{(bid/10**18)} eth</ListGroup.Item>
+                ))}
+                </ListGroup>
             </Card.Body>
         </>
     }
@@ -198,7 +234,7 @@ export default class NFTDetails extends React.Component {
             <Container className="mt-5 d-flex">
                 <Col className="me-3">
                     <Figure>
-                        <Figure.Image variant="top" src={this.state.NFTDetails.url} />
+                        <Figure.Image className="image-nft-detail" variant="top" src={this.state.NFTDetails.url} />
                     </Figure>
                     <Card>
                         <Card.Header>Header</Card.Header>
@@ -213,13 +249,13 @@ export default class NFTDetails extends React.Component {
                 <Col className="ms-3">
                     <h3>{this.state.NFTDetails.name}</h3>
                     <Card className="my-3">
-                        <Card.Body>
+                        <Card.Body className="card-detail-price">
                             {this.detailPrice()}
 
                         </Card.Body>
                     </Card>
                     <Card>
-                        
+                        {this.historyTrading()}
                     </Card>
                 </Col>
 

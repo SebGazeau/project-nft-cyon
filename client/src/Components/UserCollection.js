@@ -2,15 +2,13 @@ import React from 'react';
 import NFTCollectionsContract from "../contracts/NFTCollections.json";
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
-
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
+import Spinner from 'react-bootstrap/Spinner'
 export default class UserCollection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
         arrayCollection: [],
-
+        onLoad: true,
     }
 }
     componentDidMount = async () => {
@@ -41,38 +39,47 @@ export default class UserCollection extends React.Component {
               if(cc.returnValues._creator.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
                 const nftCollectionInstance = new this.props.state.web3.eth.Contract(
                     NFTCollectionsContract.abi, cc.returnValues._collectionAddress,
-                );
+                ); 
+                const nftTransfer = await nftCollectionInstance.getPastEvents('Transfer', options);
+                let firstUri;
+                if(nftTransfer.length > 0){
+                  firstUri = await nftCollectionInstance.methods.tokenURI(nftTransfer[0].returnValues.tokenId).call();
+                }
                 console.log(nftCollectionInstance)
                 this.setState({
-                  arrayCollection: this.state.arrayCollection.concat([
-                    {name: cc.returnValues._collectionName, address: cc.returnValues._collectionAddress}
-                  ])
+                  arrayCollection: this.state.arrayCollection.concat([{
+                      name: cc.returnValues._collectionName, 
+                      address: cc.returnValues._collectionAddress,
+                      url: (firstUri) ? `https://gateway.pinata.cloud/ipfs/${firstUri}` : ''
+                    }])
                 })
               }    
             }
 
           }
       }
+      this.setState({onLoad: false});
   }
     render()  {
       return (
         <div>
-          <Container className="container-card">
+          {(this.state.onLoad)
+            ? <Container>
+                <Spinner animation="border" variant="info" />
+              </Container>
+            :<Container className="container-card">
               {this.state.arrayCollection.map((collection, index) => (
                 <div key={index} className="link-collection pointer-collection m-2" onClick={() => {this.props.selectCollection(collection.address)}}>
                   <Card bg={'light'} text={'dark'}>
                   <Card.Header>{collection.name}</Card.Header>
                     <Card.Body>
-                      <Card.Title>coming soon</Card.Title>
-                      <Card.Text>
-
-                      </Card.Text>
+                      <Card.Img className='card-collection' variant="top" src={collection.url} />
                     </Card.Body>
                   </Card>
                   </div>
               ))}
             </Container>
-            
+          }
         </div>
       );
     }

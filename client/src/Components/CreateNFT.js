@@ -1,5 +1,4 @@
 import React from 'react';
-import SwapToken from './SwapToken';
 import Figure from 'react-bootstrap/Figure'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container';
@@ -12,27 +11,17 @@ export default class CreateNFT extends React.Component {
         this.state = {
             name: '',
             description: '',
-            // address _user,
             tokenURI: '',
             tag: '',
             collection: '',
-            // token: '',
-            // uint256 _price,
-            // bool _favorite,
-            // bool _isAuctionable
             listCollection: [],
             file: null
           }
       }
       componentDidMount = async () => {
-        // window.addEventListener('load', () =>{
-            console.log('for call', this.props)
-            setTimeout(this.collection, 3000)
-            // await ;
-        // })
+        setTimeout(this.collection, 3000);
     }
     handleChangeFile = (event) => {
-        
         this.setState({file: event.target.files[0]});
         let img = this.imgRef.current
         const reader = new FileReader();
@@ -40,10 +29,8 @@ export default class CreateNFT extends React.Component {
             img.src = reader.result;
         }
         reader.readAsDataURL(event.target.files[0]);
-        // console.log()
     }
     handleChange = (event) => {
-        console.log('change file', event.target)
         const { name, value } = event.target;
         this.setState({
             [name]: value
@@ -52,16 +39,13 @@ export default class CreateNFT extends React.Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         event.stopPropagation();
-        // let res;
         const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
         let options = {
             fromBlock: 0,              
             toBlock: 'latest'
         };
         const formData = new FormData();
-        console.log('file', this.state.file)
         formData.append('file', this.state.file);
-        // formData.append('fileName', this.name);
         const metadata = JSON.stringify({
             name: this.name,
             keyvalues: {
@@ -93,15 +77,16 @@ export default class CreateNFT extends React.Component {
                 'pinata_secret_api_key': '012e111f01b16bacadd726acf6756d2fd86cc273a2997bd597d95b625de30e08'
             },
         };
-        console.log('formdata', formData)
         const res = await axios.post(url, formData, config);
         if(this.state.collection === ''){
-            const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
-            const lengthForFactory = (collectionCreated)? 0 : collectionCreated.length;
+            const lengthForFactory = new Date().getTime();
+            const nameTemp = `name ${lengthForFactory}`.toString();
+            const symbolTemp = `symbol ${lengthForFactory}`.toString();
             const createNFTCollection = await this.props.state.contractFactory.methods
-                .createNFTCollection(`temporary-${lengthForFactory}`,this.state.symbol)
+                .createNFTCollection(nameTemp,symbolTemp)
                 .send({from : this.props.state.accounts[0]});
-            this.setState({collection :createNFTCollection.events.Transfer.returnValues._collectionAddress});
+            const collectionAdd = createNFTCollection.events.NFTCollectionCreated.returnValues._collectionAddress
+            this.setState({collection :collectionAdd});
         }
         const createNFT = await this.props.state.contractMaster.methods
             .createNFT(
@@ -112,7 +97,6 @@ export default class CreateNFT extends React.Component {
                 this.state.tag,
                 )
             .send({from : this.props.state.accounts[0]});
-        console.log('createNFT', createNFT)
         if(createNFT){
             const origin = window.location.origin;
             window.location.href = origin;
@@ -124,18 +108,10 @@ export default class CreateNFT extends React.Component {
             fromBlock: 0,              
             toBlock: 'latest'
         };
-        console.log('collection', this.props.state)
         if(this.props.state.contractMaster){
-        //   const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
-
             const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
-            console.log('collectionCreated', collectionCreated)
             if(collectionCreated.length > 0){
-              for(const cc of collectionCreated){            
-                // const nftCollectionInstance = new this.props.state.web3.eth.Contract(
-                //     NFTCollectionsContract.abi, cc.returnValues.collectionAddress,
-                // );
-                // console.log(nftCollectionInstance)
+              for(const cc of collectionCreated){
                 if(cc.returnValues._creator.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
                     this.setState({
                       listCollection: this.state.listCollection.concat([
@@ -195,11 +171,6 @@ export default class CreateNFT extends React.Component {
                             ))}
                         </Form.Select>
                     </Form.Group>
-                    {/* <Form.Group className="mb-3 row-form" controlId="formTokens">
-                        <Form.Label>Payment token</Form.Label>
-                        <Form.Check inline type="radio" name="token" onChange={this.handleChangeToken} label="ETH" value='0x64FF637fB478863B7468bc97D30a5bF3A428a1fD' id="token-eth" />
-                        <Form.Check inline type="radio" name="token" onChange={this.handleChangeToken} label="CYON" value={this.props.state.contractCYON._address} id="token-cyon" />
-                    </Form.Group> */}
                     <div className="div-btn">
                         <Button type="submit">Submit form</Button>
                     </div>
