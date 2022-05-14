@@ -49,11 +49,11 @@ contract Master is Auction {
     /// @param _description Description of the new NFT
     /// @param _tag Tag of the new NFT allowing filtering
     function createNFT(address _collectionAddress, address _firstOwner, string memory _tokenURI, string memory _name, 
-        string memory _description, string memory _tag) external {
+        string memory _description, string memory _tag) external  returns (uint256) {
             require(_collectionAddress != address(0),"The collection address needs to be different from zero.");
             require(_firstOwner != address(0),"The user address needs to be different from zero.");  
 
-            NFTCollections(_collectionAddress).MintNFT(_firstOwner,msg.sender,_tokenURI,_name,_description,_tag,address(tokenCYON),0,false,false);
+            return(NFTCollections(_collectionAddress).MintNFT(_firstOwner,msg.sender,_tokenURI,_name,_description,_tag,address(tokenCYON),0,false,false));
         }
 
 
@@ -167,6 +167,7 @@ contract Master is Auction {
         NFTCollections(_collectionAddress).ownerOf(_tokenID);       // Revert if the tokenID does not exist (ERC721Upgradeable library)
         return(NFTCollections(_collectionAddress).tokenURI(_tokenID));
     }
+
 /*
     /// @notice This function returns the current owner of the given NFT
     /// @dev Call this function to get the owner of the NFT. Revert if the tokenID does not exist
