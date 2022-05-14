@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import BN from 'bn.js'
 export default class NFTDetails extends React.Component {
     address = window.location.pathname.split('/')[3]
@@ -14,6 +15,7 @@ export default class NFTDetails extends React.Component {
         super(props);
         this.state = {
             NFTDetails: {},
+            pricingForBid: 0
         }
     }
     componentDidMount = async () => {
@@ -22,24 +24,23 @@ export default class NFTDetails extends React.Component {
             // setTimeout(this.nftCollection, 3000)
             this.nftDetails();
     }
+    handleChange = (event) => {
+        console.log('change file', event.target)
+        const { name, value } = event.target;
+        this.setState({
+            [name]: value
+        });
+    }
     makeOffer = () => {
         console.log('make offer')
     }
     buyNow = async () => {
-        console.log('buy now', this.state.NFTDetails.price)
         if(this.state.NFTDetails.price != 0){
-            console.log('address master', this.props.state.contractMaster._address)
             await this.props.state.contractCYON.methods.approve(this.props.state.contractMaster._address,new BN((this.state.NFTDetails.price).toString())).send({from: this.props.state.accounts[0]});
             const allowance = await this.props.state.contractCYON.methods.allowance(this.props.state.accounts[0],this.props.state.contractMaster._address).call();
             const balSender = await this.props.state.contractCYON.methods.balanceOf(this.props.state.accounts[0]).call();
             const balMaster = await this.props.state.contractCYON.methods.balanceOf(this.props.state.contractMaster._address).call();
-            console.log('allowance',allowance)
-            console.log('balMaster',balMaster)
-            console.log('balSender',balSender)
-            console.log('address',this.address)
-            console.log('tokenID',this.tokenID)
             const res = await this.props.state.contractMaster.methods.buyNFT(this.address, this.tokenID).send({from: this.props.state.accounts[0]});
-            console.log('res', res)
         }
     }
     nftDetails = async (e) =>{
@@ -62,12 +63,41 @@ export default class NFTDetails extends React.Component {
                 console.log('cc', cc)
                 console.log('this.token', this.tokenID)
                 console.log('returnValues._tokenID', cc.returnValues._tokenID)
+                const owner = await nftCollectionInstance.methods.ownerOf(cc.returnValues._tokenID).call();
+                if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
+                    console.log('test owner')
+                }
                 const firstUri = await nftCollectionInstance.methods.tokenURI(cc.returnValues._tokenID).call();
                 const getPrice = await nftCollectionInstance.methods.getPrice(cc.returnValues._tokenID).call();
-                const owner = await nftCollectionInstance.methods.ownerOf(cc.returnValues._tokenID).call();
-                const owner2 = await nftCollectionInstance.methods.ownerOf(this.tokenID).call();
-                console.log('owner', owner)
-                console.log('owner2', owner2)
+                // const owner = await nftCollectionInstance.methods.ownerOf(cc.returnValues._tokenID).call();
+                // const owner2 = await nftCollectionInstance.methods.ownerOf(this.tokenID).call();
+                // console.log('owner', owner)
+                // console.log('owner2', owner2)
+                const isInAuction= await this.props.state.contractMaster.methods
+                    .isInAuction(this.address, cc.returnValues._tokenID)
+                    .call({});
+                const auction = {};
+                if(isInAuction){
+                  auction.isInAuction = isInAuction;
+                  const checkAuctionTimeExpired= await this.props.state.contractMaster.methods
+                    .checkAuctionTimeExpired(this.address, cc.returnValues._tokenID)
+                    .call();
+                  if(!checkAuctionTimeExpired){
+                    auction.expired = false;
+                    const getCurrentHighestBid= await this.props.state.contractMaster.methods
+                      .getCurrentHighestBid(this.address, cc.returnValues._tokenID)
+                      .call();
+                    const getBiddersAmount= await this.props.state.contractMaster.methods
+                      .getBiddersAmount(this.address, cc.returnValues._tokenID)
+                      .call();
+                    const getTotalBid = await this.props.state.contractMaster.methods
+                        .getTotalBid(this.address, cc.returnValues._tokenID)
+                        .call();
+                    console.log('getTotalBid', getTotalBid)
+                    auction.getCurrentHighestBid = getCurrentHighestBid
+                    auction.getBiddersAmount = getBiddersAmount
+                  }
+                }
                 this.setState({
                   NFTDetails: {
                     name: cc.returnValues._collectionData.name, 
@@ -75,7 +105,7 @@ export default class NFTDetails extends React.Component {
                     description: cc.returnValues._collectionData.description, 
                     tag: cc.returnValues._collectionData.tag, 
                     price: getPrice, 
-                    isAuctionable: false, // call getter auction
+                    auction: auction, 
                     url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
                   }
                 })
@@ -90,12 +120,26 @@ export default class NFTDetails extends React.Component {
         console.log(this.state.NFTDetails.price != '0')
         console.log(parseInt(this.state.NFTDetails.price))
         if(this.state.NFTDetails.price != undefined){
-            if(this.state.NFTDetails.price != '0') {
+            if(this.state.NFTDetails.price != '0' && !this.state.auction.isInAuction) {
                 return <>
                     <div>
                         <span>Current price : {}</span><div><span>{(this.state.NFTDetails.price/10**18)}</span> CYON</div>
                     </div>
                     <div>
+
+                        <Button className="mx-2" onClick={this.buyNow}>Bid</Button>
+                    </div>
+                </>
+            }else if(this.state.NFTDetails.auction.isInAuction && !this.state.NFTDetails.auction.expired){
+                return <>
+                    <div>
+                        <span>Current Highest Bid : {this.state.NFTDetails.auction.getCurrentHighestBid} eth</span>
+                    </div>
+                    <div>                        
+                        <Form.Group className="mb-3 row-form" controlId="formPriceBid">
+                            <Form.Label>Bid in ETH</Form.Label>
+                            <Form.Control required size="sm" type="number" value={this.state.pricingForBid} name="pricingForBid" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
+                        </Form.Group>
                         <Button className="mx-2" onClick={this.buyNow}>Buy now</Button>
                     </div>
                 </>

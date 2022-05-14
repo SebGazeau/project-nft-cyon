@@ -18,6 +18,7 @@ export default class UserNFT extends React.Component {
             tokenIDForSell: '',
             saleForSell: '',
             pricingForSell: 0,
+            bidingTimeForSell: 0,
           // }
         }
     }
@@ -64,6 +65,9 @@ export default class UserNFT extends React.Component {
         case 'pricing':
           (value) ? this.setState({pricingForSell: parseInt(value)}) : this.setState({pricingForSell: value}) 
           break;
+        case 'time':
+          this.setState({bidingTimeForSell: value})
+          break;
       }
       this.setState({
           forSell:{[name]: value}
@@ -75,15 +79,30 @@ export default class UserNFT extends React.Component {
       let selling;
       console.log('collectionSelected',this.props.collectionSelected)
       console.log('forSell',this.state)
+      await this.state.nftCollectionInstance.methods.approve(this.props.state.contractMaster._address,this.state.tokenIDForSell).send({from: this.props.state.accounts[0]});
       if(this.state.saleForSell === 'direct' && this.state.pricingForSell != 0){
-        await this.state.nftCollectionInstance.methods.approve(this.props.state.contractMaster._address,this.state.tokenIDForSell).send({from: this.props.state.accounts[0]});
         selling = await this.props.state.contractMaster.methods
           .setNewPrice(this.props.collectionSelected, this.state.tokenIDForSell,new BN((this.state.pricingForSell*10**18).toString()))
           .send({from : this.props.state.accounts[0]});
 
-      }else{
-        //
+      }else if(this.state.saleForSell === 'auction'){
+        const requestAuction= await this.props.state.contractMaster.methods
+          .requestAuction(this.props.collectionSelected, this.state.tokenIDForSell)
+          .send({from : this.props.state.accounts[0]});
+        console.log('requestAuction',requestAuction)
+        if(requestAuction){
+          const initialPrice = (this.state.pricingForSell != 0) ? new BN((this.state.pricingForSell*10**18).toString()) : this.state.pricingForSell;
+          const inSecond = (new Date(this.state.bidingTimeForSell).getTime()/1000).toFixed(0);
+          console.log('inSecond', inSecond)
+          const startAuction = await this.props.state.contractMaster.methods
+            .startAuction(this.props.collectionSelected, this.state.tokenIDForSell,new BN((inSecond).toString()))
+            .send({from : this.props.state.accounts[0], value: initialPrice});
+          if(startAuction){
+            selling = true;
+          }
+        }
       }
+      
       console.log(selling)
       if(selling){
         const profile = `${window.location.origin}/profile`;
@@ -118,7 +137,28 @@ export default class UserNFT extends React.Component {
               if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
                 const firstUri = await nftCollectionInstance.methods.tokenURI(cc.returnValues._tokenID).call();
                 const getPrice = await nftCollectionInstance.methods.getPrice(cc.returnValues._tokenID).call();
-                console.log('getPrice', getPrice)
+                const isInAuction= await this.props.state.contractMaster.methods
+                  .isInAuction(this.props.collectionSelected, cc.returnValues._tokenID)
+                  .call();
+                console.log('isInAuction', isInAuction)
+                const auction = {};
+                if(isInAuction){
+                  auction.isInAuction = isInAuction;
+                  const checkAuctionTimeExpired= await this.props.state.contractMaster.methods
+                    .checkAuctionTimeExpired(this.props.collectionSelected, cc.returnValues._tokenID)
+                    .call();
+                  if(!checkAuctionTimeExpired){
+                    auction.expired = false;
+                    const getCurrentHighestBid= await this.props.state.contractMaster.methods
+                      .getCurrentHighestBid(this.props.collectionSelected, cc.returnValues._tokenID)
+                      .call();
+                    const getBiddersAmount= await this.props.state.contractMaster.methods
+                      .getBiddersAmount(this.props.collectionSelected, cc.returnValues._tokenID)
+                      .call();
+                    auction.getCurrentHighestBid = getCurrentHighestBid
+                    auction.getBiddersAmount = getBiddersAmount
+                  }
+                }
                 this.setState({
                   arrayNFT: this.state.arrayNFT.concat([{
                     tokenID: cc.returnValues._tokenID,
@@ -127,7 +167,7 @@ export default class UserNFT extends React.Component {
                     description: cc.returnValues._collectionData.description, 
                     tag: cc.returnValues._collectionData.tag, 
                     price: getPrice, 
-                    isAuctionable: cc.returnValues._collectionData.isAuctionable, 
+                    auction: auction, 
                     url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
                   }])
                 })
@@ -138,11 +178,24 @@ export default class UserNFT extends React.Component {
           console.log(this.state.arrayNFT)
       }
     }
-    canSell = (price, tID) => {
-      if(price == '0'){
+    canSell = (price, tID, auction) => {
+      if(price == '0' && !auction.isInAuction){
         return <Button variant="primary" onClick={() => this.handleShow(tID)}>sell</Button>;
       }else{
-        return <Button variant="primary" onClick={() => this.cancelSell(tID)}>Cancel Sell</Button>;
+        if(auction.isInAuction){
+          if(!auction.expired){
+            return <>
+              <div>
+                <span>Auction in progress</span><br/>
+                <span>Current Highest Bid : {auction.getCurrentHighestBid}</span><br/>
+                <span>Bidders Amount : {auction.getBiddersAmount}</span>
+              </div>
+            </>
+          }
+          return <>{this.auctionInfo()}</>
+        }else{
+          return <Button variant="primary" onClick={() => this.cancelSell(tID)}>Cancel Sell</Button>;
+        }
       }
     }
     needPrice = () => {
@@ -152,6 +205,21 @@ export default class UserNFT extends React.Component {
             <Form.Label>Your price in CYON</Form.Label>
             <Form.Control required size="sm" type="number" value={this.state.pricingForSell} name="pricing" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
           </Form.Group>
+        </>
+      }else if(this.state.saleForSell == 'auction'){
+        return <>
+          <Form.Group className="mb-3 row-form" controlId="formPrice">
+            <Form.Label>Initial price for auction in ETH</Form.Label>
+            <Form.Control required size="sm" type="number" value={this.state.pricingForSell} name="pricing" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
+          </Form.Group>
+          <Form.Group className="mb-3 row-form" controlId="formPrice">
+            <Form.Label>Timing for auction</Form.Label>
+            <Form.Control required size="sm" type="date" value={this.state.bidingTimeForSell} name="time" step="0.00000001" placeholder="0.00000001" onChange={this.handleChange}/>
+          </Form.Group>
+        </>
+      }else{
+        return <>
+          <span>select a listing option</span>
         </>
       }
     }
@@ -168,7 +236,7 @@ export default class UserNFT extends React.Component {
                     <Card.Body>
                       <Card.Title>Card Title </Card.Title>
                       <Card.Text>
-                        {this.canSell(nft.price, nft.tokenID)}
+                        {this.canSell(nft.price, nft.tokenID, nft.auction)}
                     
                       </Card.Text>
                     </Card.Body>
