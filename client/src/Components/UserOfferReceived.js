@@ -26,31 +26,32 @@ export default class UserOfferReceived extends React.Component {
         const NFTSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
         console.log("NFTSolded.length=",NFTSolded.length);
 
+        /*event NFTSold(string _collectionName, address _collectionAddress, uint256 _tokenID, address _oldOwner, address _newOwner, uint256 _price, string _units);*/
 
 
-          /*if(NFTSolded.length > 0){
-            for(const cc of NFTSolded){            
-              const owner = await instance.methods.ownerOf(cc.returnValues._tokenID).call();
-              if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
-                const firstUri = await instance.methods.tokenURI(cc.returnValues._tokenID).call();
-                this.setState({
-                  arrayNFT: this.state.arrayNFT.concat([{
-                    firstOwner: cc.returnValues._firstOwner,
-                    creator: cc.returnValues._collectionData._creator, 
-                    tokenURI: cc.returnValues._collectionData._tokenURI, 
-                    name: cc.returnValues._collectionData._name, 
-                    description: cc.returnValues._collectionData._description, 
-                    tag: cc.returnValues._collectionData._tag, 
-                    tokenAddress: cc.returnValues._collectionData._tokenAddress, 
-                    price: cc.returnValues._collectionData._price,
-                    favorite: cc.returnValues._collectionData._favorite, 
-                    url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
-                  }])
-                })
-              }
+        /*if(NFTSolded.length > 0){
+          for(const cc of NFTSolded){            
+            const owner = await instance.methods.ownerOf(cc.returnValues._tokenID).call();
+            if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
+              const firstUri = await instance.methods.tokenURI(cc.returnValues._tokenID).call();
+              this.setState({
+                arrayNFT: this.state.arrayNFT.concat([{
+                  firstOwner: cc.returnValues._firstOwner,
+                  creator: cc.returnValues._collectionData._creator, 
+                  tokenURI: cc.returnValues._collectionData._tokenURI, 
+                  name: cc.returnValues._collectionData._name, 
+                  description: cc.returnValues._collectionData._description, 
+                  tag: cc.returnValues._collectionData._tag, 
+                  tokenAddress: cc.returnValues._collectionData._tokenAddress, 
+                  price: cc.returnValues._collectionData._price,
+                  favorite: cc.returnValues._collectionData._favorite, 
+                  url:`https://gateway.pinata.cloud/ipfs/${firstUri}`
+                }])
+              })
             }
+          }
 
-          }*/
+        }*/
       }
     }
 
