@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import ListGroup from 'react-bootstrap/ListGroup'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
+// Component that displays the offers made for the connected user's NFTs
 export default class UserOfferMade extends React.Component {
     constructor(props) {
         super(props);
@@ -24,6 +25,7 @@ export default class UserOfferMade extends React.Component {
 
         const NFTSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
 
+        // Storage of NFT sales that have their new owner address equal to the connected address
         if(NFTSolded.length > 0){
           for(const cc of NFTSolded){       
             const newOwner = cc.returnValues._newOwner;

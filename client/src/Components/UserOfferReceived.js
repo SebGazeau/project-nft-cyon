@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import MasterContract from "../contracts/Master.json";
 import ListGroup from 'react-bootstrap/ListGroup'
 
+// Component that displays the offers received for the connected user's NFTsuser
 export default class UserOfferReceived extends React.Component {
     constructor(props) {
         super(props);
@@ -16,15 +17,19 @@ export default class UserOfferReceived extends React.Component {
     componentDidMount = async () => {
       this.Master();
     }
+
     Master = async (e) =>{
       const options = {
           fromBlock: 0,              
           toBlock: 'latest'
       };
+
       if(this.props.state.contractMaster){
 
+        // Recovery of the events for the sold NFT
         const NFTSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
 
+        // Storage of NFT sales that have their previous owner's address equal to the connected address
         if(NFTSolded.length > 0){
           for(const cc of NFTSolded){       
             const oldOwner = cc.returnValues._oldOwner;
