@@ -17,25 +17,22 @@ contract('Auction', accounts => {
     const user4 = accounts[4];
     const addressZero = '0x0000000000000000000000000000000000000000';
 
-    //const addressCYON = '0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B';
-
-    const nftTokenID = 1;
+    //const nftTokenID = 1;
     const biddingTime = 60;
 
     const nftCollectionName = 'Collection1';
     const nftCollectionSymbol = 'COL1';
-    let nftCollectionAddress;
     const tokenURI = 'Test URI';
     const nftName = 'My first NFT';
     const nftDescription = 'This is my first NFT';
     const nftTag = 'Collectible';
-
 
     let auctionInstance;
     let masterInstance;
     let nftFactoryInstance;
     let CYONTokenInstance;
     let nftCollectionInstance;
+    let nftCollectionAddress;
 
     //------------------------------------------------------------------------------------
     // ------------------------------------Tests------------------------------------------
@@ -46,27 +43,34 @@ contract('Auction', accounts => {
             CYONTokenInstance = await CYONToken.new('10000000000000000000000000',{from:owner});
             masterInstance = await Master.new(CYONTokenInstance.address, {from:owner});
             auctionInstance = await Auction.new({from:owner});
-            nftCollectionInstance = await NFTCollections.new('Col1','Col1',{from:owner});
             nftFactoryInstance = await NFTCollectionFactory.new({from:owner});
-            
-            
+            const tx = await nftFactoryInstance.createNFTCollection(nftCollectionName,nftCollectionSymbol,{from:owner});
+            const collectionAddress = tx.logs[0].args[1]
+            console.log(collectionAddress);
+            nftCollectionInstance = await NFTCollections.at(collectionAddress);
+
+            //nftCollectionInstance = await NFTCollections.new(nftCollectionName,nftCollectionSymbol,{from:owner});
+            nftCollectionAddress = nftCollectionInstance.address;
+            console.log(nftCollectionInstance.address);
+
+
+
         });
         it("should revert when an auction has already started.", async () => {
-            nftCollectionAddress = nftCollectionInstance.address;
-
-            const test1 = await nftCollectionInstance.MintNFT.call(owner,owner,tokenURI,nftName,nftDescription,nftTag,CYONTokenInstance.address,0,false,false);
-            console.log(test1.toString());
-            const test2 = await masterInstance.createNFT.call(nftCollectionAddress,owner,tokenURI,nftName,nftDescription,nftTag,{ from: owner }); 
-            console.log(test2.toString());
-            const test3 = await masterInstance.createNFT.call(nftCollectionAddress,owner,tokenURI,nftName,nftDescription,nftTag,{ from: owner }); 
-            console.log(test3.toString());
+            const nftTokenID = await masterInstance.createNFT.call(nftCollectionAddress,user1,tokenURI,nftName,nftDescription,nftTag,{ from: user1 }); 
+            //const nftTokenID = await nftCollectionInstance.MintNFT.call(user1,user1,tokenURI,nftName,nftDescription,nftTag,CYONTokenInstance.address,0,false,false,{ from: user1 }); 
+            console.log(nftTokenID.toString());
 
             const name = await nftCollectionInstance.name();
             console.log(name.toString());
-            const balance = await nftCollectionInstance.balanceOf(owner,{ from: owner });
+            const balance = await nftCollectionInstance.balanceOf(user1,{ from: user1 });
             console.log(balance.toString());
-            
-            await masterInstance.requestAuction(nftCollectionAddress,new BN(1),{ from: owner });
+
+            const ownerOf = await nftCollectionInstance.ownerOf(1,{ from: user1 });
+            console.log(ownerOf.toString());
+
+            const result = await masterInstance.requestAuction.call(nftCollectionAddress,nftTokenID.toString(),{ from: user1 });
+            console.log(result.toString());
             //await auctionInstance.startAuction(nftCollectionAddress,nftTokenID,biddingTime,{ from: owner });
             // Try to call it again (through the Master) and should revert
             //await expectRevert(masterInstance.requestAuction(nftCollectionAddress,nftTokenID,{ from: owner }), 'An auction has already started for this NFT.');
