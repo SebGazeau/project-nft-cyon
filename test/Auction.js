@@ -168,22 +168,68 @@ contract('Auction', accounts => {
             const biddersAmount = await masterInstance.getBiddersAmount.call(nftCollectionAddress,1,{ from: user2});
             expect(new BN(biddersAmount)).to.be.bignumber.equal(new BN(2));
         });
-        it("should the current bidder to be the highest bidder.", async () => {
+        it("should the current bidder be the highest bidder.", async () => {
             await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
             expect(await masterInstance.getCurrentHighestBidder(nftCollectionAddress,1,{from:user1})).to.equal(user2);
         });
-        it("should the current highest bid equal to 20.", async () => {
+        it("should the current highest bid be equal to 20.", async () => {
             await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
             const val = await masterInstance.getCurrentHighestBid(nftCollectionAddress,1,{from:user1});
             expect(new BN(val)).to.be.bignumber.equal(new BN(20));
         });
-        it("should the current total bid of the current bidder equal to 20.", async () => {
+        it("should the current total bid of the current bidder be equal to 20.", async () => {
             await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
             const val = await masterInstance.getTotalBid(nftCollectionAddress,1,{from:user2});
             expect(new BN(val)).to.be.bignumber.equal(new BN(20));
+        });
+        it("should the new highest bidder have zero pending refunds.", async () => {
+            await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 , value: new BN(20)});
+            await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(40)});
+            const val = await masterInstance.getPendingRefunds(nftCollectionAddress,1,{from:user2});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(0));
+        });
+        it("should raise an event when a new highest bid happened.", async () => {
+            const bid = new BN(40);
+            await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1});
+            const findEvent = await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: bid});
+            expectEvent(findEvent,"HighestBidIncreased" ,{_nftCollectionAddress: nftCollectionAddress, _nftTokenID: new BN(1), _bidder: user2, _newBid: bid});
+        });
+    });
+
+    describe("withdrawRefund function test", function () {
+        beforeEach(async function () {
+            CYONTokenInstance = await CYONToken.new('10000000000000000000000000',{from:owner});
+            masterInstance = await Master.new(CYONTokenInstance.address, {from:owner});
+            nftFactoryInstance = await NFTCollectionFactory.new({from:owner});
+            nftCollectionInstance = await NFTCollections.new(nftCollectionName,nftCollectionSymbol,{from:owner});
+            nftCollectionAddress = nftCollectionInstance.address;
+            
+            await nftCollectionInstance.MintNFT(user1,user1,tokenURI,nftName,nftDescription,nftTag,CYONTokenInstance.address,0,false,false,{ from: user1 });         
+            await masterInstance.requestAuction(nftCollectionAddress,1,{ from: user1 });
+            await masterInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 , value: new BN(20)});
+            await masterInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(40)});
+        });
+        it("should revert when the collection address is set to zero.", async () => {     
+            await expectRevert(masterInstance.withdrawRefund(addressZero,1,{ from: user1 }), 'The collection address needs to be different from zero.');
+        });
+        it("should revert when the highest bidder requests a refund.", async () => {
+            await expectRevert(masterInstance.withdrawRefund(nftCollectionAddress,1,{ from: user2 }), 'There is nothing to refund to the message sender for this NFT.');
+        });
+        it("should revert when the a user that did not bid requests a refund.", async () => {
+            await expectRevert(masterInstance.withdrawRefund(nftCollectionAddress,1,{ from: user3 }), 'There is nothing to refund to the message sender for this NFT.');
+        });
+        it("should the pending refunds be reset after a correct refund.", async () => {
+            await masterInstance.withdrawRefund(nftCollectionAddress,1,{ from: user1});
+            const val = await masterInstance.getPendingRefunds(nftCollectionAddress,1,{from:user1});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(0));
+        });
+        it("should the total bid be reset after a correct refund.", async () => {
+            await masterInstance.withdrawRefund(nftCollectionAddress,1,{ from: user1});
+            const val = await masterInstance.getTotalBid(nftCollectionAddress,1,{from:user1});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(0));
         });
     });
 });
