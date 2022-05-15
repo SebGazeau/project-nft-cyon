@@ -142,14 +142,7 @@ contract NFTCollections is ERC721URIStorage {
     /// @return _price The price of the given NFT
     function getPrice(uint256 _tokenID) external view returns (uint256) {
         //require((_tokenID <= _tokenIds.current()) && (_tokenID > 0), "This token ID does not exist.");      // Make sure the token ID exists
-        this.ownerOf(_tokenID);       // Revert if the tokenID does not exist (ERC721Upgradeable library)
-        return(collection[_tokenID-1].price);
+        this.ownerOf(_tokenID); // Revert if the tokenID does not exist (ERC721Upgradeable library)
+        return (collection[_tokenID - 1].price);
     }
-
-    /*/// @notice This function allows to get the total amount of NFTs saved in this contract
-    /// @dev Call this function to check the last created token ID
-    /// @return _totalSupply The last created token ID
-    function getTotalSupply() external view returns (uint256) {
-        return(_tokenIds.current());
-    }*/
 }
