@@ -34,26 +34,39 @@ export default class UserCollection extends React.Component {
       if(this.props.state.contractMaster){
         const nftCollDeployedNetwork = NFTCollectionsContract.networks[this.props.state.networkId];
           const collectionCreated = await this.props.state.contractFactory.getPastEvents('NFTCollectionCreated', options);
+          
           if(collectionCreated.length > 0){
-            for(const cc of collectionCreated){   
-              if(cc.returnValues._creator.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
-                const nftCollectionInstance = new this.props.state.web3.eth.Contract(
-                    NFTCollectionsContract.abi, cc.returnValues._collectionAddress,
+            for(const cc of collectionCreated){  
+              const nftCollectionInstance = new this.props.state.web3.eth.Contract(
+                NFTCollectionsContract.abi, cc.returnValues._collectionAddress,
                 ); 
+                // console.log('one cc', cc)
                 const nftTransfer = await nftCollectionInstance.getPastEvents('Transfer', options);
                 let firstUri;
+                console.log('nftTransfer', nftTransfer.length )
                 if(nftTransfer.length > 0){
-                  firstUri = await nftCollectionInstance.methods.tokenURI(nftTransfer[0].returnValues.tokenId).call();
-                }
-                console.log(nftCollectionInstance)
-                this.setState({
-                  arrayCollection: this.state.arrayCollection.concat([{
-                      name: cc.returnValues._collectionName, 
-                      address: cc.returnValues._collectionAddress,
-                      url: (firstUri) ? `https://gateway.pinata.cloud/ipfs/${firstUri}` : ''
-                    }])
-                })
-              }    
+                  let owner= '';
+                  let first= -1;
+                  for(const nt of nftTransfer){
+                    console.log('i',nt)
+                    owner = await nftCollectionInstance.methods.ownerOf(nt.returnValues.tokenId).call();
+                      if(owner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
+                        const isAlreadySet = this.state.arrayCollection.find(el => el.name === cc.returnValues._collectionName);
+                        if(!isAlreadySet){
+                          console.log('set uri')
+                          firstUri = await nftCollectionInstance.methods.tokenURI(nftTransfer[0].returnValues.tokenId).call();
+                          console.log(nftCollectionInstance)
+                          this.setState({
+                            arrayCollection: this.state.arrayCollection.concat([{
+                              name: cc.returnValues._collectionName, 
+                              address: cc.returnValues._collectionAddress,
+                              url: (firstUri) ? `https://gateway.pinata.cloud/ipfs/${firstUri}` : ''
+                            }])
+                        })
+                        }
+                    }
+                  }
+                }    
             }
 
           }
