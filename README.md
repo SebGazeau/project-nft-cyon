@@ -246,6 +246,6 @@ In the profile section the user can see these collections of which he holds an N
 When browsing a collection he can see the Nft he owns and he can put them on sale either at auction in eth or directly in cyon. 
 
 ## Videos
-https://www.loom.com/share/90125a84c9244da48230ab32f3232711 (presentation of the token, the application, and the creation of an NFT and a collection)
-https://www.loom.com/share/164dafd2be704a87a918cf1c56537124 (sale and purchase of an NFT, with history, and conducting an auction)
-https://www.loom.com/share/42e70e2875634a7c80a8dcaf2ff94af7 (bidding on an NFT and presenting the code)
+- https://www.loom.com/share/90125a84c9244da48230ab32f3232711 (presentation of the token, the application, and the creation of an NFT and a collection)
+- https://www.loom.com/share/164dafd2be704a87a918cf1c56537124 (sale and purchase of an NFT, with history, and conducting an auction)
+- https://www.loom.com/share/42e70e2875634a7c80a8dcaf2ff94af7 (bidding on an NFT and presenting the code)
