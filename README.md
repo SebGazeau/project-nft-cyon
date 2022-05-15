@@ -215,7 +215,25 @@ This smart contract contains:
 - 3 functions out of 3 have been tested.
 
 ## User Interface (Dapp)
+The user interface was written in ReactJs with bootstrap as material design. The entry point of the structure is the file App .js. 
+It allows to articulate thanks to the system router of react. 
+The different parts of the application are divided into components inside the Components folder.
 
+The interface offers a home page that shows the collections of Nft create on the application. 
+Each card is clickable to see the different NFT of the collection, 
+a filter is offered to display only some NFT of the collection. 
+Each NFT is in turn clickable to see detailed information and possible actions! 
+
+Possible actions are direct buying or participating in an auction. 
+In the case of the auction the person may bid in that the auction is not completed. 
+If she is not the person with the highest auction she can recover the funds from previous auctions.
+
+The menu bar allows, if the user is logged in, to access the profile, collection creation and Nft creation screens 
+on the left. On the right a connection button if necessary, it is replaced by a "swap" button 
+that displays a block for exchanging ethers for tokens of the protocol needed for direct purchases.
+
+In the profile section the user can see these collections of which he holds an Nft and the transactions that have carried out. 
+When browsing a collection he can see the Nft he owns and he can put them on sale either at auction in eth or directly in cyon. 
 Videos :
 https://www.loom.com/share/90125a84c9244da48230ab32f3232711 (presentation of the token, the application, and the creation of an NFT and a collection)
 https://www.loom.com/share/164dafd2be704a87a918cf1c56537124 (sale and purchase of an NFT, with history, and conducting an auction)
