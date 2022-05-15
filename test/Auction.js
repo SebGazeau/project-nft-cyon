@@ -133,7 +133,7 @@ contract('Auction', accounts => {
         });
     });
     describe("bid function test", function () {
-        before(async function () {
+        beforeEach(async function () {
             CYONTokenInstance = await CYONToken.new('10000000000000000000000000',{from:owner});
             masterInstance = await Master.new(CYONTokenInstance.address, {from:owner});
             auctionInstance = await Auction.new({from:owner});
@@ -157,7 +157,7 @@ contract('Auction', accounts => {
             await expectRevert(auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)}), 'The auction has already ended.');
         });
         it("should revert when the amount of bidders exceeds 1000.", async () => {
-            await auctionInstance.startAuction(nftCollectionAddress,1,1,{ from: user1 });
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             for (let i = 0; i < 1000; i++) {
                 // create random address : tbd
                 let addr;
@@ -166,14 +166,43 @@ contract('Auction', accounts => {
             await expectRevert(auctionInstance.bid(nftCollectionAddress,1,{ from: user3 , value: new BN(1200)}), 'This auction achieved the maximum amount of bidders.');
         });
         it("should revert when the new bid is equal to the current highest bid.", async () => {
-            await auctionInstance.startAuction(nftCollectionAddress,1,1,{ from: user1 });
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
             await expectRevert(auctionInstance.bid(nftCollectionAddress,1,{ from: user3 , value: new BN(20)}), 'The bid is too low.');
         });
         it("should revert when the new bid is lower than the current highest bid.", async () => {
-            await auctionInstance.startAuction(nftCollectionAddress,1,1,{ from: user1 });
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
             await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
             await expectRevert(auctionInstance.bid(nftCollectionAddress,1,{ from: user3 , value: new BN(15)}), 'The bid is too low.');
+        });
+        it("should the previous highest bidder get the correct amount of pending refunds.", async () => {
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 , value: new BN(20)});
+            await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(40)});
+            const val = await auctionInstance.getPendingRefunds(nftCollectionAddress,1,{from:user1});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(20));
+        });
+        it("should return the correct amount of bidders (2).", async () => {
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
+            await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
+            const biddersAmount = await auctionInstance.getBiddersAmount.call(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
+            expect(new BN(biddersAmount)).to.be.bignumber.equal(new BN(2));
+        });
+        it("should the current bidder to be the highest bidder.", async () => {
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
+            await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
+            expect(await auctionInstance.getCurrentHighestBidder(nftCollectionAddress,1,{from:user1})).to.equal(user2);
+        });
+        it("should the current highest bid equal to 20.", async () => {
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
+            await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
+            const val = await auctionInstance.getCurrentHighestBid(nftCollectionAddress,1,{from:user1});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(20));
+        });
+        it("should the current total bid of the current bidder equal to 20.", async () => {
+            await auctionInstance.startAuction(nftCollectionAddress,1,biddingTime,{ from: user1 });
+            await auctionInstance.bid(nftCollectionAddress,1,{ from: user2 , value: new BN(20)});
+            const val = await auctionInstance.getTotalBid(nftCollectionAddress,1,{from:user1});
+            expect(new BN(val)).to.be.bignumber.equal(new BN(20));
         });
     });
 });
