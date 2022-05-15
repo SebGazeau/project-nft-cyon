@@ -121,27 +121,14 @@ class App extends Component {
                       <Link className="nav-link" to="/">Home</Link>
                       {(this.state.accounts)
                         ? <> 
-                            <OverlayTrigger 
-                              placement="right"
-                              overlay={
-                                <Tooltip id={'tooltip-nav'}>
-                                  Your Profile
-                                </Tooltip>
-                              }>
-                              <NavDropdown title={
-                                  <div className="pull-left">
-                                      <img className="nav-dropdown-img" 
-                                          src={window.location.origin + '/logo192.png'} 
-                                          alt="user pic"
-                                      />
-                                  </div>
-                                } 
-                                id="basic-nav-dropdown">
-                                <Link className="dropdown-item" to="/profile">Profile</Link>
-                                <Link className="dropdown-item" to="/create-nft">Create NFT</Link>
-                                <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
-                              </NavDropdown>
-                            </OverlayTrigger>
+                          <NavDropdown title={
+                              <div className="pull-left">Profile</div>
+                            } 
+                            id="basic-nav-dropdown">
+                            <Link className="dropdown-item" to="/profile">Your Profile</Link>
+                            <Link className="dropdown-item" to="/create-nft">Create NFT</Link>
+                            <Link className="dropdown-item" to="/create-collection">Create Collection</Link>
+                          </NavDropdown>
                           </>
                         : <></>
                       }
@@ -150,7 +137,7 @@ class App extends Component {
                     {(this.state.accounts)
                       ? <>
                           <div className="text-navbar">
-                            <span>{this.state.accounts[0]}</span><span>Swap Your eth in CYON for buy directly</span>
+                            <span>{this.state.accounts[0]}</span><span>Swap your ETH in CYON for buy directly</span>
                           </div>
                           <SwapToken address={this.state.accounts[0]} instance={this.state.contractCYON} balanceEth={this.state.balanceEth}/>
                         </>
@@ -174,7 +161,7 @@ class App extends Component {
             </Routes>
           </div>
         </Router>
-        <span>made by Alexis, Sébastien & Sébastien</span>
+        <span>Made by Alexis, Sébastien (known as "Moustache") & Sébastien (known as "Dudu")</span>
       </div>
     );
   }

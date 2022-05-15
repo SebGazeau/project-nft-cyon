@@ -237,7 +237,6 @@ export default class UserNFT extends React.Component {
                       <Card.Title>Card Title </Card.Title>
                       <Card.Text>
                         {this.canSell(nft.price, nft.tokenID, nft.auction)}
-                    
                       </Card.Text>
                     </Card.Body>
                   </Card>
@@ -246,7 +245,7 @@ export default class UserNFT extends React.Component {
             </Container>
             <Modal show={this.state.show} onHide={this.handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal Selling</Modal.Title>
+          <Modal.Title>Modal selling</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>

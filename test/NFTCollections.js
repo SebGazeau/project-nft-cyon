@@ -18,5 +18,4 @@ contract('NFTCollections', accounts => {
             //await expectRevert(NFTCollectionsInstance.xxx(owner, {from:owner}), "xx");
         });
     });
-
 });

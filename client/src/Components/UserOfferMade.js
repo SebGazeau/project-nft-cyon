@@ -23,11 +23,11 @@ export default class UserOfferMade extends React.Component {
       };
       if(this.props.state.contractMaster){
 
-        const NFTSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
+        const CollectionSolded = await this.props.state.contractMaster.getPastEvents('NFTSold', options);
 
         // Storage of NFT sales that have their new owner address equal to the connected address
-        if(NFTSolded.length > 0){
-          for(const cc of NFTSolded){       
+        if(CollectionSolded.length > 0){
+          for(const cc of CollectionSolded){       
             const newOwner = cc.returnValues._newOwner;
             if(newOwner.toLowerCase() === this.props.state.accounts[0].toLowerCase()){
               this.setState({
