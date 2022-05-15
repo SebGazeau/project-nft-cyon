@@ -22,7 +22,7 @@ Alexis Mendoza:
 Sébastien Dupertuis:
 
 - Master, Auction smart contracts and NFTCollections complements for the Master contract + comments
-- Unit testing for Master and Auction
+- Unit testings
 - README
 
 ## Introduction
@@ -112,13 +112,14 @@ This smart contract contains:
   - bid: external payable / This function allows to place a new bid.
   - withdrawRefund: external / This function allows a user that placed a bid (not the highest anymore) to get back his funds.
   - endAuction: internal / This function allows to close the auction.
-- 6 getters:
+- 7 getters:
   - checkAuctionTimeExpired: This function allows to check if the auction ended.
   - getCurrentHighestBidder: This function allows to check for the current highest bidder.
   - getCurrentHighestBid: This function allows to check for the current highest bid.
   - getBiddersAmount: This function allows to check for the amount of bidders.
   - isInAuction: This function allows to check if there is an auction in progress for the given NFT.
   - getTotalBid: This function allows to check the total bid of the user calling the message.
+  - getPendingRefunds: This function allows to check the total pending refunds of a user, if any.
 
 ### CYONToken.sol
 
