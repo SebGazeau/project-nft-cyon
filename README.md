@@ -1,6 +1,20 @@
 # project-nft-cyon - Project 5 Alyra
 Authors: Sébastien Gazeau, Alexis Mendoza and Sébastien Dupertuis
 
+## Work Sharing
+Sébastien Gazeau:
+    * Dapp
+    * CYONToken smart contract
+    * Unit testing for CYONToken
+Alexis Mendoza:
+    * Dapp
+    * NFTCollectionFactory and NFTCollections smart contracts
+    * Unit testing for NFTCollectionFactory and NFTCollections
+    * Project coordination
+Sébastien Dupertuis:
+    * Master and Auction smart contracts
+    * Unit testing for Master and Auction
+    * README
 ## Introduction
 This project consists in the creation of a decentralized application that represents a NFT marketplace. 
 This plateform allows the users to:
