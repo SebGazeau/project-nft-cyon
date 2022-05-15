@@ -191,6 +191,7 @@ This smart contract contains:
 - NFTCollections.js
 
 ### Master.js
+
 ### Auction.js
 
 - 19 valid tests
@@ -205,6 +206,7 @@ This smart contract contains:
 - 4 functions out of 4 have been tested.
 
 ### NFTCollectionFactory.js
+
 ### NFTCollections.js
 
 - 7 valid tests
@@ -214,4 +216,7 @@ This smart contract contains:
 
 ## User Interface (Dapp)
 
-Video:
+Videos :
+https://www.loom.com/share/90125a84c9244da48230ab32f3232711 (presentation of the token, the application, and the creation of an NFT and a collection)
+https://www.loom.com/share/164dafd2be704a87a918cf1c56537124 (sale and purchase of an NFT, with history, and conducting an auction)
+https://www.loom.com/share/42e70e2875634a7c80a8dcaf2ff94af7 (bidding on an NFT and presenting the code)
