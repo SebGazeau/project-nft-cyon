@@ -18,7 +18,7 @@ contract('NFTCollectionFactory', (accounts) => {
 	let NFT1;
 	let NFT2;
 	let NFT3;
-	describe.only("Testing create NFT", () => {
+	describe("Testing create NFT", () => {
 		before(async () => {
 			CYONTokenInstance = await CYONToken.new('10000000000000000000000000',{from:owner});
 			await CYONTokenInstance.transfer(CYONTokenInstance.address, '10000000000000000000000000');
