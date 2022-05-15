@@ -6,20 +6,22 @@ Authors: Sébastien Gazeau, Alexis Mendoza and Sébastien Dupertuis
 
 Sébastien Gazeau:
 
+- Github coordination and deployment
 - Dapp
-- CYONToken smart contract
+- CYONToken smart contract + comments
 - Unit testing for CYONToken
+- Webserver deployment
 
 Alexis Mendoza:
 
-- Dapp
-- NFTCollectionFactory and NFTCollections smart contracts
+- NFTCollectionFactory and NFTCollections smart contracts + comments
+- Dapp (some screens)
 - Video
 - Project coordination
 
 Sébastien Dupertuis:
 
-- Master and Auction smart contracts
+- Master, Auction smart contracts and NFTCollections complements for the Master contract + comments
 - Unit testing for Master and Auction
 - README
 
