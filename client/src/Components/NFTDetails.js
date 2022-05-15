@@ -59,6 +59,8 @@ export default class NFTDetails extends React.Component {
             const balSender = await this.props.state.contractCYON.methods.balanceOf(this.props.state.accounts[0]).call();
             const balMaster = await this.props.state.contractCYON.methods.balanceOf(this.props.state.contractMaster._address).call();
             const res = await this.props.state.contractMaster.methods.buyNFT(this.address, this.tokenID).send({from: this.props.state.accounts[0]});
+            const origin = window.location.origin;
+            window.location.href = `${origin}/profile`;
         }
     }
     nftDetails = async (e) =>{
