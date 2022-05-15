@@ -48,7 +48,7 @@ contract('NFTCollections', accounts => {
             await NFTCollectionsInstance.MintNFT(owner,owner,tokenURI,nftName,nftDescription,nftTag,user2,0,false,false,{ from: owner });
             expect(await NFTCollectionsInstance.tokenURI(1,{from:owner})).to.equal(tokenURI);
         });
-        it("should raise an event when a NFT is created.", async () => {
+        it.skip("should raise an event when a NFT is created.", async () => {
             const findEvent = await NFTCollectionsInstance.MintNFT(owner,owner,tokenURI,nftName,nftDescription,nftTag,user2,0,false,false,{ from: owner });
             console.log(findEvent);
             expectEvent(findEvent,"NFTCreated" ,{_collectionName: nftCollectionName, _collectionAddress: NFTCollectionsInstance.address, _tokenID: new BN(1), _collectionData: {name: nftName, description: nftDescription, tag: nftTag, tokenAddress: user2, price: new BN(0), favorite: false, isAuctionable: false},_creator: owner});
