@@ -192,12 +192,17 @@ This smart contract contains:
 
 ### Master.js
 
+- 11 valid tests
+- 1 pending test
+- 0 invalid tests
+- 3 functions out of 6 have been tested.
+
 ### Auction.js
 
-- 19 valid tests
+- 26 valid tests
 - 2 pending tests
 - 0 invalid tests
-- 3 functions out of 5 have been tested.
+- 11 functions out of 12 have been tested.
 
 ### CYONToken.js
 
@@ -206,6 +211,11 @@ This smart contract contains:
 - 4 functions out of 4 have been tested.
 
 ### NFTCollectionFactory.js
+
+- 3 valid tests
+- 1 pending test
+- 0 invalid tests
+- 1 functions out of 1 has been tested.
 
 ### NFTCollections.js
 
@@ -234,7 +244,8 @@ that displays a block for exchanging ethers for tokens of the protocol needed fo
 
 In the profile section the user can see these collections of which he holds an Nft and the transactions that have carried out. 
 When browsing a collection he can see the Nft he owns and he can put them on sale either at auction in eth or directly in cyon. 
-Videos :
+
+## Videos
 https://www.loom.com/share/90125a84c9244da48230ab32f3232711 (presentation of the token, the application, and the creation of an NFT and a collection)
 https://www.loom.com/share/164dafd2be704a87a918cf1c56537124 (sale and purchase of an NFT, with history, and conducting an auction)
 https://www.loom.com/share/42e70e2875634a7c80a8dcaf2ff94af7 (bidding on an NFT and presenting the code)
