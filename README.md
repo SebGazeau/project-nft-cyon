@@ -199,6 +199,11 @@ This smart contract contains:
 - 3 functions out of 5 have been tested.
 
 ### CYONToken.js
+
+- 8 valid tests
+- 0 invalid tests
+- 4 functions out of 4 have been tested.
+
 ### NFTCollectionFactory.js
 ### NFTCollections.js
 
