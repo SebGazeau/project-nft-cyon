@@ -48,6 +48,7 @@ contract Master is Auction {
     /// @param _name Name of the new NFT
     /// @param _description Description of the new NFT
     /// @param _tag Tag of the new NFT allowing filtering
+    /// @return _tokenID New id of the item that has been minted
     function createNFT(address _collectionAddress, address _firstOwner, string memory _tokenURI, string memory _name, 
         string memory _description, string memory _tag) external  returns (uint256) {
             require(_collectionAddress != address(0),"The collection address needs to be different from zero.");
