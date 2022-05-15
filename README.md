@@ -14,6 +14,7 @@ Alexis Mendoza:
 
 - Dapp
 - NFTCollectionFactory and NFTCollections smart contracts
+- Video
 - Project coordination
 
 Sébastien Dupertuis:
