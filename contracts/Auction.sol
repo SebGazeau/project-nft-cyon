@@ -77,7 +77,7 @@ contract Auction {
         require(_nftCollectionAddress != address(0),"The collection address needs to be different from zero.");    // Make sure the address is different from zero
         require(bidManager[_nftCollectionAddress][_nftTokenID].hasAuctionStarted, "There is no auction started for this NFT.");        // Make sure an auction is ongoing for this NFT
         require(block.timestamp < bidManager[_nftCollectionAddress][_nftTokenID].auctionEndTime, "The auction has already ended.");    // Make sure the auction is not finished yet
-        require(bidManager[_nftCollectionAddress][_nftTokenID].bidders.length < 1000, "This auction achieved the maximum amount of bids.");    // Revert if we achieve the given limit of bids
+        require(bidManager[_nftCollectionAddress][_nftTokenID].bidders.length < 1000, "This auction achieved the maximum amount of bidders.");    // Revert if we achieve the given limit of bids
         require((bidManager[_nftCollectionAddress][_nftTokenID].totalBid[msg.sender]+msg.value) > bidManager[_nftCollectionAddress][_nftTokenID].highestBid, "The bid is too low."); // Make sure the bid (including previous bids) is higher than the current highest bid
     
         // Check if there was already a bid
