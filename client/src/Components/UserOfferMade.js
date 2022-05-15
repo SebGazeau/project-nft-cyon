@@ -33,6 +33,7 @@ export default class UserOfferMade extends React.Component {
               this.setState({
                 arrayNFT: this.state.arrayNFT.concat([{
                   collectionName: cc.returnValues._collectionName,
+                  URI: await this.props.state.contractMaster.methods.getURI(cc.returnValues._collectionAddress,cc.returnValues._tokenID).call(),
                   price: cc.returnValues._price,
                   units: cc.returnValues._units
                 }])
@@ -48,7 +49,7 @@ export default class UserOfferMade extends React.Component {
         <div>
           <Container className="container-list">
           <ListGroup>
-            {(this.state.arrayNFT!=null)?this.state.arrayNFT.map((a) => (<ListGroup.Item>Collection = "{a.collectionName}", Units = "{a.units}", Price = "{a.price}"</ListGroup.Item>)):""}
+            {(this.state.arrayNFT!=null)?this.state.arrayNFT.map((a) => (<ListGroup.Item>Collection = "{a.collectionName}", URI = "{a.URI}", Price = "{a.price}", Units = "{a.units}"</ListGroup.Item>)):""}
         </ListGroup>
         </Container>
         </div>
