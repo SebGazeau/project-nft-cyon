@@ -182,10 +182,6 @@ This smart contract contains:
 
 ## Unit Tests
 
-- xx valid tests
-- xx invalid tests
-- xx functions out of xx have been tested.
-
 5 files:
 
 - Master.js
@@ -193,6 +189,23 @@ This smart contract contains:
 - CYONToken.js
 - NFTCollectionFactory.js
 - NFTCollections.js
+
+### Master.js
+### Auction.js
+
+- 19 valid tests
+- 2 pending tests
+- 0 invalid tests
+- 3 functions out of 5 have been tested.
+
+### CYONToken.js
+### NFTCollectionFactory.js
+### NFTCollections.js
+
+- 7 valid tests
+- 1 pending test
+- 0 invalid tests
+- 3 functions out of 3 have been tested.
 
 ## User Interface (Dapp)
 
